@@ -1,4 +1,6 @@
 // Minimal test page with zero dependencies
+import Link from 'next/link';
+
 export default function TestPage() {
   const timestamp = new Date().toISOString();
   
@@ -23,9 +25,9 @@ export default function TestPage() {
       <div style={{ marginTop: '2rem' }}>
         <h2>Test Links:</h2>
         <ul>
-          <li><a href="/api/health">Health API Test</a></li>
-          <li><a href="/coffee-store">Coffee Store Main</a></li>
-          <li><a href="/">Home Page</a></li>
+          <li><Link href="/api/health">Health API Test</Link></li>
+          <li><Link href="/coffee-store">Coffee Store Main</Link></li>
+          <li><Link href="/">Home Page</Link></li>
         </ul>
       </div>
     </div>
