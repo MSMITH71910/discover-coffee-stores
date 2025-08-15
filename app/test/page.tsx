@@ -8,6 +8,7 @@ export default function TestPage() {
     <div style={{ padding: '2rem', fontFamily: 'system-ui' }}>
       <h1>🧪 Minimal Test Page</h1>
       <p><strong>Status:</strong> ✅ Page rendering successfully</p>
+      <p><strong>Build:</strong> Fresh deployment with Airtable integration</p>
       <p><strong>Timestamp:</strong> {timestamp}</p>
       <p><strong>Node Environment:</strong> {process.env.NODE_ENV || 'unknown'}</p>
       
