@@ -49,12 +49,15 @@ export default async function Page(props: {
                 )}
                 
                 <div className="bg-blue-50 p-4 rounded-lg">
-                  <h3 className="font-semibold text-blue-800 mb-2">✅ Page Status</h3>
+                  <h3 className="font-semibold text-blue-800 mb-2">✅ Page Status - FIXED!</h3>
                   <p className="text-blue-700 text-sm">
                     This page is now rendering successfully! The 500 errors have been resolved.
                   </p>
                   <p className="text-blue-600 text-sm mt-2">
                     Full coffee store data loading will be restored once API configuration is complete.
+                  </p>
+                  <p className="text-green-600 text-xs mt-1 font-mono">
+                    Fixed: Dynamic routing without generateStaticParams
                   </p>
                 </div>
               </div>
