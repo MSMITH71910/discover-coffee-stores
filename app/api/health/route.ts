@@ -23,7 +23,8 @@ export async function GET() {
       buildInfo: {
         nextVersion: '15.3.2',
         nodeVersion: process.version
-      }
+      },
+      deploymentStatus: 'FIXED - Latest commit deployed'
     };
 
     return NextResponse.json(status);
