@@ -1,89 +1,227 @@
-# Before you run the app
+# ☕ Discover Coffee Stores
 
-Please go through the below details before you run the app.
+A modern, location-based coffee shop discovery application built with Next.js 15 and TypeScript. Find the perfect coffee spot near you with real-time data, beautiful imagery, and detailed store information.
 
-## Environment Variables
+![Next.js](https://img.shields.io/badge/Next.js-15.3.2-black)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.6.3-blue)
+![React](https://img.shields.io/badge/React-19.0.0-61dafb)
+![Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-000000)
 
-For this app to work, you need to configure the following environment variables in your .env.local file so please create a .env.local file in the root of your project right next to readme.md and the file needs to look like this:
+## 🌟 Features
 
-```
-MAPBOX_API_KEY=<value>
-AIRTABLE_API_KEY=<value>
-AIRTABLE_BASE_KEY=<value>
-NEXT_PUBLIC_UNSPLASH_ACCESS_KEY=<value>
-```
+- **🗺️ Location-Based Discovery**: Find coffee shops near your current location or any specified area
+- **📱 Responsive Design**: Seamless experience across desktop, tablet, and mobile devices
+- **🖼️ High-Quality Images**: Beautiful coffee shop photos powered by Unsplash API
+- **🔍 Real-Time Search**: Live coffee shop data via Google Maps integration through SERP API
+- **📊 Store Details**: Comprehensive information including addresses, ratings, and more
+- **⚡ Performance Optimized**: Built with Next.js 15 for lightning-fast loading
+- **🛡️ Type-Safe**: Full TypeScript implementation for robust development
+- **🧪 Well-Tested**: Comprehensive test suite with Jest and React Testing Library
 
-#### PLEASE NOTE, 
-You need to configure the above API keys by going to [Mapbox](https://www.mapbox.com/), [Airtable](https://www.airtable.com/) and [Unsplash](https://unsplash.com/) for their respective keys. To generate API keys for all 3 platforms, you need to sign up, create an account, create a project and generate an API key for each platform. Otherwise, the [course](https://bit.ly/3nRIsbi) walks you through how to create each one of those if you get stuck!
+## 🚀 Live Demo
 
-#### If don't have valid API keys i.e. they are empty, or you don't have a .env.local file with the above keys configured or above keys exists but no values are not configured inside that file then you will get the following error:
-<img src="https://res.cloudinary.com/dkfnd7xy7/image/upload/v1659022098/Screen_Shot_2022-07-28_at_11.27.20_AM_l5apuq.png" width="600px" height="300px" />
+Visit the live application: [https://discover-coffee-stores-pied.vercel.app](https://discover-coffee-stores-pied.vercel.app)
 
+## 🛠️ Tech Stack
 
-## Common Errors
+### Frontend
+- **Next.js 15.3.2** - React framework with App Router
+- **React 19.0.0** - UI library with latest features
+- **TypeScript 5.6.3** - Type-safe development
+- **Tailwind CSS 3.4.1** - Utility-first styling
+- **React Hook Form** - Form state management
 
-#### If you use Node.js version greater than 16, you may see this problem: https://github.com/vercel/next.js/issues/37300
+### Backend & APIs
+- **SERP API** - Google Maps coffee shop data
+- **Unsplash API** - High-quality coffee shop imagery
+- **Mapbox API** - Geocoding and location services  
+- **Airtable** - Cloud database for store data persistence
 
-Example Error:
+### Development & Testing
+- **Jest 29.7.0** - JavaScript testing framework
+- **React Testing Library** - Component testing utilities
+- **TypeScript ESLint** - Code quality and consistency
+- **Husky** - Git hooks for quality control
 
-```
-(node:36337) ExperimentalWarning: The Fetch API is an experimental feature. This feature could change at any time
-(Use `node --trace-warnings ...` to show where the warning was created)
-wait  - compiling /_error (client and server)...
-event - compiled client and server successfully in 33 ms (258 modules)
-error - TypeError
-    at normalizeAndValidateHeaderValue (node:internal/deps/undici/undici:4210:15)
-    at HeadersList.append (node:internal/deps/undici/undici:4268:33)
-    at fill (node:internal/deps/undici/undici:4235:19)
-    at new Request (node:internal/deps/undici/undici:4982:13)
-    at Agent.fetch2 (node:internal/deps/undici/undici:5539:29)
-    at Object.fetch (node:internal/deps/undici/undici:6370:20)
-    at fetch (node:internal/bootstrap/pre_execution:196:25)
-    at fetchCoffeeStores (webpack-internal:///./lib/coffee-stores.js:33:28)
-    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
-    at async getStaticProps (webpack-internal:///./pages/index.js:44:26) {
-  page: '/'
-}
-```
+## 📋 Prerequisites
 
-##### Solution:
-Downgrade Node.js version to 16 as v18 ships experimental fetch api that can have breaking changes.
+- Node.js 18.17 or later
+- npm or yarn package manager
+- API keys for external services (see setup below)
 
-#### You didn't configure Environment variables as mentioned in this Readme
+## ⚙️ Installation & Setup
 
-If don't have valid API keys i.e. they are empty, or you don't have a .env.local file with the above keys configured or above keys exists but no values are not configured inside that file then you will get the following error:
-<img src="https://res.cloudinary.com/dkfnd7xy7/image/upload/v1659022098/Screen_Shot_2022-07-28_at_11.27.20_AM_l5apuq.png" width="600px" height="300px" />
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd discover-coffee-stores
+   ```
 
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-## Getting Started
+3. **Environment Configuration**
+   
+   Create a `.env.local` file in the root directory:
+   ```env
+   # Required API Keys
+   SERP_API_KEY=your_serpapi_key_here
+   UNSPLASH_ACCESS_KEY=your_unsplash_access_key_here
+   MAPBOX_API=your_mapbox_access_token_here
+   
+   # Airtable Configuration
+   AIRTABLE_TOKEN=your_airtable_personal_access_token
+   AIRTABLE_BASE_ID=your_airtable_base_id
+   ```
 
-First, run the development server:
+4. **API Keys Setup Guide**
 
+   **SERP API** (Google Maps Data)
+   - Visit [serpapi.com](https://serpapi.com)
+   - Sign up for a free account (100 searches/month free)
+   - Copy your API key
+
+   **Unsplash API** (Coffee Shop Images)
+   - Visit [unsplash.com/developers](https://unsplash.com/developers)
+   - Create a new application
+   - Copy your Access Key
+
+   **Mapbox API** (Geocoding)
+   - Visit [mapbox.com](https://www.mapbox.com)
+   - Sign up and create a new token
+   - Copy your access token
+
+   **Airtable** (Data Storage)
+   - Visit [airtable.com](https://airtable.com)
+   - Create a base with coffee store data
+   - Generate a personal access token
+
+## 🏃‍♂️ Running the Application
+
+### Development Mode
 ```bash
 npm run dev
-# or
-yarn dev
+```
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+### Production Build
+```bash
+npm run build
+npm start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Testing
+```bash
+# Run all tests
+npm test
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+# Run tests in watch mode
+npm run test:watch
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+# Run with coverage
+npm run test:coverage
+```
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+## 📁 Project Structure
 
-## Learn More
+```
+discover-coffee-stores/
+├── app/                    # Next.js 15 App Router
+│   ├── coffee-store/      # Coffee store pages
+│   ├── api/               # API routes
+│   └── globals.css        # Global styles
+├── lib/                   # Core business logic
+│   └── coffee-stores.ts   # API integration functions
+├── types/                 # TypeScript type definitions
+├── __tests__/             # Test suites
+│   ├── app/              # Component tests
+│   ├── lib/              # Logic tests
+│   └── api/              # API tests
+├── public/                # Static assets
+└── components/            # Reusable UI components
+```
 
-To learn more about Next.js, take a look at the following resources:
+## 🔧 Key Features Implementation
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Location-Based Discovery
+The application uses the browser's Geolocation API combined with SERP API to fetch real-time coffee shop data based on the user's current location or specified coordinates.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+### Error Handling & Fallbacks
+Robust error handling ensures the application gracefully degrades when external APIs are unavailable, providing fallback data and maintaining functionality.
 
-## Deploy on Vercel
+### Performance Optimization
+- Server-side rendering with Next.js 15
+- Image optimization with Next.js Image component
+- API response caching strategies
+- Efficient re-rendering with React 19
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Type Safety
+Complete TypeScript implementation with strict type checking, ensuring robust development and fewer runtime errors.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## 🚀 Deployment
+
+This application is optimized for deployment on Vercel:
+
+1. **Connect your repository** to Vercel
+2. **Set environment variables** in your Vercel dashboard
+3. **Deploy** - Vercel will automatically build and deploy your application
+
+### Environment Variables for Production
+Ensure all API keys are configured in your Vercel environment settings:
+- `SERP_API_KEY`
+- `UNSPLASH_ACCESS_KEY` 
+- `MAPBOX_API`
+- `AIRTABLE_TOKEN`
+- `AIRTABLE_BASE_ID`
+
+## 🧪 Testing Strategy
+
+The application includes comprehensive test coverage:
+
+- **Unit Tests**: Core business logic and utility functions
+- **Integration Tests**: API endpoints and data fetching
+- **Component Tests**: React component behavior and rendering
+- **Error Scenario Tests**: Graceful handling of API failures
+
+Run `npm test` to execute the full test suite.
+
+## 📈 Performance & Scalability
+
+### Optimization Techniques
+- **Image Optimization**: Next.js automatic image optimization
+- **Code Splitting**: Automatic route-based code splitting
+- **Caching Strategies**: API response caching and memoization
+- **Bundle Analysis**: Regular bundle size monitoring
+
+### Scalability Considerations
+- **API Rate Limiting**: Intelligent request batching and caching
+- **Error Boundaries**: Graceful failure handling
+- **Database Optimization**: Efficient Airtable queries
+- **CDN Integration**: Static asset delivery via Vercel Edge Network
+
+## 🤝 Contributing
+
+While this is primarily a personal project, suggestions and feedback are welcome. Please ensure all contributions maintain the existing code quality standards and include appropriate tests.
+
+## 📝 License
+
+This project is licensed under the MIT License. See the LICENSE file for details.
+
+## 👨‍💻 About the Developer
+
+**Michael R Smith**  
+*SmithDev Labs*
+
+Experienced full-stack developer specializing in modern web technologies, with expertise in React ecosystem, TypeScript, and cloud-native applications. Passionate about creating performant, user-centric web experiences.
+
+---
+
+### 🔗 Connect with SmithDev Labs
+
+Building innovative web solutions with cutting-edge technology stacks. Focused on performance, scalability, and exceptional user experiences.
+
+---
+
+*Built with ❤️ and lots of ☕ by SmithDev Labs*

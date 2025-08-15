@@ -7,22 +7,23 @@ const getListOfCoffeeStorePhotos = async () => {
     );
     const photos = await response.json();
     const results = photos?.results || [];
-    return results?.map((result: { urls: any }) => result.urls['small']);
+    return results?.map((result: { urls: any }) => result.urls['small']) || [];
   } catch (error) {
     console.error('Error retrieving a photo', error);
+    return []; // Return empty array on error
   }
 };
 
 const transformCoffeeData = (
   idx: number,
   result: MapboxType,
-  photos: Array<string>
+  photos: Array<string> = []
 ) => {
   return {
     id: result.id,
     address: result.properties?.address || '',
     name: result.text,
-    imgUrl: photos.length > 0 ? photos[idx] : '',
+    imgUrl: photos && photos.length > 0 ? photos[idx] : '',
   };
 };
 
@@ -73,10 +74,17 @@ export const fetchCoffeeStores = async (longLat: string, limit: number) => {
       }
     ];
     
-    const photos = await getListOfCoffeeStorePhotos();
-    return fallbackShops.slice(0, limit).map((result: any, idx: number) =>
-      transformCoffeeData(idx, result, photos)
-    );
+    try {
+      const photos = await getListOfCoffeeStorePhotos();
+      return fallbackShops.slice(0, limit).map((result: any, idx: number) =>
+        transformCoffeeData(idx, result, photos)
+      );
+    } catch (photosError) {
+      // If photos also fail, still return fallback data without images
+      return fallbackShops.slice(0, limit).map((result: any, idx: number) =>
+        transformCoffeeData(idx, result, [])
+      );
+    }
   }
 };
 
@@ -88,11 +96,17 @@ export const fetchCoffeeStore = async (id: string, queryId: string) => {
     const data = await response.json();
     const photos = await getListOfCoffeeStorePhotos();
 
-    const coffeeStore = data.features.map((result: MapboxType, idx: number) =>
-      transformCoffeeData(parseInt(queryId), result, photos)
+    const features = data.features || [];
+    if (features.length === 0) {
+      return {};
+    }
+
+    const coffeeStore = features.map((result: MapboxType, idx: number) =>
+      transformCoffeeData(parseInt(queryId) || 0, result, photos)
     );
     return coffeeStore.length > 0 ? coffeeStore[0] : {};
   } catch (error) {
-    console.error('Error while fetching coffee stores', error);
+    console.error('Error while fetching coffee store', error);
+    return {};
   }
 };
