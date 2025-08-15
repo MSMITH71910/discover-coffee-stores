@@ -5,6 +5,15 @@ import UpvoteAirtable from '@/components/upvote-airtable.client';
 
 // Get coffee store data from external APIs
 async function getCoffeeStoreData(id: string, queryId: string) {
+  const mockData = {
+    id,
+    name: `Coffee Store ${queryId}`,
+    address: '123 Coffee Street, Coffee City',
+    neighbourhood: 'Coffee District',
+    votes: 0,
+    imgUrl: 'https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80'
+  };
+
   try {
     // First check if we have it in Airtable
     const airtableResponse = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/coffee-stores?id=${id}`, {
@@ -16,25 +25,44 @@ async function getCoffeeStoreData(id: string, queryId: string) {
       return {
         id: data.id,
         name: data.name,
-        address: data.address || 'Address not available',
-        neighbourhood: data.neighbourhood || 'Neighbourhood not available',
+        address: data.address || mockData.address,
+        neighbourhood: data.neighbourhood || mockData.neighbourhood,
         votes: data.votes || 0,
-        imgUrl: data.imgUrl || 'https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80'
+        imgUrl: data.imgUrl || mockData.imgUrl
       };
     }
+    
+    // If record doesn't exist, create it in Airtable
+    if (airtableResponse.status === 404) {
+      console.log('Coffee store not found in Airtable, creating new record...');
+      
+      const createResponse = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/coffee-stores`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(mockData),
+        cache: 'no-store'
+      });
+      
+      if (createResponse.ok) {
+        const createdData = await createResponse.json();
+        return {
+          id: createdData.id,
+          name: createdData.name,
+          address: createdData.address || mockData.address,
+          neighbourhood: createdData.neighbourhood || mockData.neighbourhood,
+          votes: createdData.votes || 0,
+          imgUrl: createdData.imgUrl || mockData.imgUrl
+        };
+      }
+    }
   } catch (error) {
-    console.log('Airtable fetch failed, using fallback data:', error);
+    console.log('Airtable operation failed, using fallback data:', error);
   }
 
-  // Fallback to mock data if Airtable isn't available
-  return {
-    id,
-    name: `Coffee Store ${queryId}`,
-    address: '123 Coffee Street, Coffee City',
-    neighbourhood: 'Coffee District',
-    votes: 0,
-    imgUrl: 'https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80'
-  };
+  // Final fallback to mock data
+  return mockData;
 }
 
 export default async function Page(props: {
