@@ -19,7 +19,7 @@ export async function POST(request: Request) {
     }
 
     // Find the existing record
-    const findUrl = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_NAME}?filterByFormula=AND({id}="${id}")`;
+    const findUrl = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_NAME}?filterByFormula={id}="${id}"`;
     
     const findResponse = await fetch(findUrl, {
       headers: {
