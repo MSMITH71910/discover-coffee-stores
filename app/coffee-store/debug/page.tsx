@@ -1,126 +1,83 @@
-// Debug page to test coffee store functions in production
-'use client';
-
-import { useState, useEffect } from 'react';
-
+// Simple debug page with minimal dependencies
 export default function DebugPage() {
-  const [debugInfo, setDebugInfo] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function runDebugTests() {
-      try {
-        setLoading(true);
+  return (
+    <div style={{ minHeight: '100vh', backgroundColor: '#f7fafc', padding: '2rem' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+        <h1 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '2rem' }}>
+          🔍 Production Debug Information
+        </h1>
         
-        // Test 1: Health check
-        const healthResponse = await fetch('/api/health');
-        const healthData = await healthResponse.json();
-        
-        // Test 2: Try to fetch coffee stores
-        let coffeeStoreTest = { error: 'Not tested' };
-        try {
-          const storeResponse = await fetch('/api/getCoffeeStoresByLocation?latLong=40.7589,-73.9851&limit=2');
-          coffeeStoreTest = {
-            status: storeResponse.status,
-            ok: storeResponse.ok,
-            data: storeResponse.ok ? await storeResponse.json() : 'Failed to parse'
-          };
-        } catch (error: any) {
-          coffeeStoreTest = { error: error.message };
-        }
-
-        setDebugInfo({
-          health: healthData,
-          coffeeStoreTest,
-          clientInfo: {
-            userAgent: navigator.userAgent,
-            url: window.location.href,
-            timestamp: new Date().toISOString()
-          }
-        });
-      } catch (error: any) {
-        setDebugInfo({
-          error: 'Debug test failed',
-          message: error.message,
-          stack: error.stack
-        });
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    runDebugTests();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-100 py-8">
-        <div className="max-w-4xl mx-auto px-4">
-          <h1 className="text-3xl font-bold mb-8">🔍 Debug Mode</h1>
-          <div className="bg-white p-6 rounded-lg shadow">
-            <p>Running diagnostic tests...</p>
+        <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', marginBottom: '1.5rem' }}>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem' }}>
+            Environment Check
+          </h2>
+          <div style={{ fontSize: '0.875rem', fontFamily: 'monospace' }}>
+            <div>NODE_ENV: {process.env.NODE_ENV || 'not set'}</div>
+            <div>NEXT_RUNTIME: {process.env.NEXT_RUNTIME || 'not set'}</div>
           </div>
         </div>
-      </div>
-    );
-  }
 
-  return (
-    <div className="min-h-screen bg-gray-100 py-8">
-      <div className="max-w-4xl mx-auto px-4">
-        <h1 className="text-3xl font-bold mb-8">🔍 Production Debug Information</h1>
-        
-        <div className="space-y-6">
-          {/* Environment Variables Status */}
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-xl font-semibold mb-4">Environment Variables</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {debugInfo?.health?.envVariables && Object.entries(debugInfo.health.envVariables).map(([key, value]: [string, any]) => (
-                <div key={key} className="flex justify-between items-center p-3 bg-gray-50 rounded">
-                  <span className="font-mono text-sm">{key}</span>
-                  <span className={`px-2 py-1 rounded text-xs ${value ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                    {value ? '✓ Set' : '❌ Missing'}
+        <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', marginBottom: '1.5rem' }}>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem' }}>
+            Environment Variables Status
+          </h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '0.5rem' }}>
+            {[
+              'MAPBOX_API',
+              'UNSPLASH_ACCESS_KEY', 
+              'SERP_API_KEY',
+              'AIRTABLE_TOKEN',
+              'AIRTABLE_BASE_ID'
+            ].map(envVar => {
+              const isSet = !!process.env[envVar];
+              return (
+                <div key={envVar} style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  padding: '0.75rem',
+                  backgroundColor: '#f7fafc',
+                  borderRadius: '4px'
+                }}>
+                  <span style={{ fontFamily: 'monospace', fontSize: '0.875rem' }}>
+                    {envVar}
+                  </span>
+                  <span style={{
+                    padding: '0.25rem 0.5rem',
+                    borderRadius: '4px',
+                    fontSize: '0.75rem',
+                    backgroundColor: isSet ? '#c6f6d5' : '#fed7d7',
+                    color: isSet ? '#22543d' : '#742a2a'
+                  }}>
+                    {isSet ? '✓ Set' : '❌ Missing'}
                   </span>
                 </div>
-              ))}
-            </div>
-            
-            {debugInfo?.health?.missingEnvVars?.length > 0 && (
-              <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded">
-                <h3 className="text-red-800 font-semibold">Missing Environment Variables:</h3>
-                <ul className="list-disc list-inside mt-2 text-red-700">
-                  {debugInfo.health.missingEnvVars.map((env: string) => (
-                    <li key={env} className="font-mono text-sm">{env}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
+              );
+            })}
           </div>
-
-          {/* Coffee Store API Test */}
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-xl font-semibold mb-4">Coffee Store API Test</h2>
-            <pre className="bg-gray-100 p-4 rounded overflow-auto text-sm">
-              {JSON.stringify(debugInfo?.coffeeStoreTest, null, 2)}
-            </pre>
-          </div>
-
-          {/* Full Debug Data */}
-          <details className="bg-white p-6 rounded-lg shadow">
-            <summary className="text-xl font-semibold cursor-pointer mb-4">Full Debug Data</summary>
-            <pre className="bg-gray-100 p-4 rounded overflow-auto text-xs">
-              {JSON.stringify(debugInfo, null, 2)}
-            </pre>
-          </details>
         </div>
 
-        <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded">
-          <h3 className="text-blue-800 font-semibold mb-2">🔧 How to Fix Missing Environment Variables:</h3>
-          <ol className="list-decimal list-inside text-blue-700 space-y-1">
-            <li>Go to your Vercel dashboard</li>
-            <li>Select your project</li>
-            <li>Go to Settings → Environment Variables</li>
-            <li>Add the missing variables shown above</li>
+        <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem' }}>
+            Quick Test
+          </h2>
+          <div style={{ marginBottom: '1rem' }}>
+            <strong>Test URLs:</strong>
+          </div>
+          <ul style={{ listStyleType: 'disc', paddingLeft: '2rem' }}>
+            <li><a href="/api/health" target="_blank">Health Check API</a></li>
+            <li><a href="/coffee-store" target="_blank">Coffee Store Main Page</a></li>
+            <li><a href="/" target="_blank">Home Page</a></li>
+          </ul>
+        </div>
+
+        <div style={{ marginTop: '2rem', padding: '1rem', backgroundColor: '#bee3f8', borderRadius: '8px' }}>
+          <h3 style={{ color: '#2a69ac', fontWeight: '600', marginBottom: '0.5rem' }}>
+            🔧 Fix Missing Environment Variables:
+          </h3>
+          <ol style={{ color: '#2c5aa0', paddingLeft: '1.5rem' }}>
+            <li>Go to Vercel dashboard → Project → Settings → Environment Variables</li>
+            <li>Add any missing variables shown above</li>
             <li>Redeploy the project</li>
           </ol>
         </div>
