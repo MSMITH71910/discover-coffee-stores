@@ -5,13 +5,14 @@ import Image from 'next/image';
 // Completely simplified page to isolate 500 error cause
 export default async function Page(props: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ id: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   try {
     const params = await props.params;
     const searchParams = await props.searchParams;
     const { id } = params;
-    const { id: queryId } = searchParams;
+    // Handle both 'id' and 'idx' query parameters
+    const queryId = (searchParams.id || searchParams.idx || '0') as string;
 
     return (
       <div className="min-h-screen bg-gray-100 py-8">
@@ -97,11 +98,5 @@ export default async function Page(props: {
   }
 }
 
-// Simplified static params generation
-export async function generateStaticParams() {
-  // Return minimal static params to avoid API calls during build
-  return [
-    { id: 'test-store-1' },
-    { id: 'test-store-2' }
-  ];
-}
+// Remove generateStaticParams to make this a fully dynamic route
+// This will prevent build-time pre-generation and allow on-demand rendering
