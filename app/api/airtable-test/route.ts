@@ -18,7 +18,7 @@ export async function GET() {
     }
 
     // Test with the correct table ID from your URL
-    const tableId = 'tblDEV9W7lkoSexsf';  // From your Airtable URL
+    const tableId = 'tbl63q5444pDhM1Lv';  // Updated to correct table ID
     const testUrl = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${tableId}?maxRecords=1`;
     
     console.log('Testing URL:', testUrl);
