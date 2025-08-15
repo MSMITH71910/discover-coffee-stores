@@ -23,10 +23,12 @@ export default function UpvoteAirtable({
   const [voting, setVoting] = useState(initialVoting);
   const [isVoting, setIsVoting] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
 
   const handleUpvote = async () => {
     setIsVoting(true);
     setError('');
+    setSuccess(false);
     
     try {
       // First, ensure the coffee store exists in Airtable
@@ -61,6 +63,7 @@ export default function UpvoteAirtable({
 
       const updatedStore = await voteResponse.json();
       setVoting(updatedStore.votes);
+      setSuccess(true);
 
       // Also store in localStorage as backup
       if (typeof window !== 'undefined') {
@@ -121,9 +124,11 @@ export default function UpvoteAirtable({
         </p>
       )}
       
-      <p className="mt-2 text-xs text-green-600">
-        ✅ Votes saved to Airtable database
-      </p>
+      {success && (
+        <p className="mt-2 text-xs text-green-600">
+          ✅ Vote saved to Airtable database
+        </p>
+      )}
     </div>
   );
 }
