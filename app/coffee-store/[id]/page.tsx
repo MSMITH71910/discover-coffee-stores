@@ -38,8 +38,34 @@ async function getCoffeeStoreData(id: string, queryId: string) {
   } catch (error) {
     // Silently handle API errors
   }
-  
-  // Fallback data if SERP API fails
+
+  // If we have real data, use it immediately - don't let Airtable override it
+  if (realCoffeeData) {
+    // Try to get vote count from Airtable, but always use real data for everything else
+    let voteCount = 0;
+    try {
+      const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+      const airtableResponse = await fetch(`${baseUrl}/api/coffee-stores?id=${id}`, {
+        cache: 'no-store'
+      });
+      
+      if (airtableResponse.ok) {
+        const existingData = await airtableResponse.json();
+        voteCount = existingData.votes || 0;
+      }
+    } catch (error) {
+      // Use 0 votes if Airtable fails
+    }
+    
+    // Always return real data with vote count from Airtable
+    return {
+      ...realCoffeeData,
+      votes: voteCount,
+      voting: voteCount
+    };
+  }
+
+  // Only if SERP API completely fails, use fallback logic
   const fallbackData = {
     id,
     name: `Coffee Shop ${queryId}`,
@@ -56,8 +82,6 @@ async function getCoffeeStoreData(id: string, queryId: string) {
     userRatings: JSON.stringify([])
   };
 
-  const dataToUse = realCoffeeData || fallbackData;
-
   try {
     // Check if record exists in Airtable
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
@@ -67,57 +91,20 @@ async function getCoffeeStoreData(id: string, queryId: string) {
     
     if (airtableResponse.ok) {
       const existingData = await airtableResponse.json();
-      
-      // Always use real data if we have it, and update Airtable
-      if (realCoffeeData) {
-        try {
-          const updateResponse = await fetch(`${baseUrl}/api/coffee-stores`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              ...realCoffeeData,
-              votes: existingData.votes || 0, // Keep existing vote count
-            }),
-          });
-          if (updateResponse.ok) {
-            const updatedData = await updateResponse.json();
-            return {
-              ...updatedData,
-              voting: updatedData.votes || 0
-            };
-          }
-        } catch (updateError) {
-          // Continue to return data with real address overlay
-        }
-      }
-      
-      // Always prioritize real data if we have it
-      if (realCoffeeData) {
-        return {
-          ...realCoffeeData,
-          votes: existingData.votes || 0,
-          voting: existingData.votes || 0,
-          recordId: existingData.recordId
-        };
-      }
-      
-      // Return existing data only if no real data available
       return {
         ...existingData,
         voting: existingData.votes || 0
       };
     }
     
-    // If record doesn't exist, create it with real data
+    // If record doesn't exist, create it
     if (airtableResponse.status === 404) {
       const createResponse = await fetch(`${baseUrl}/api/coffee-stores`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(dataToUse),
+        body: JSON.stringify(fallbackData),
       });
 
       if (createResponse.ok) {
@@ -134,7 +121,7 @@ async function getCoffeeStoreData(id: string, queryId: string) {
 
   // Final fallback 
   return {
-    ...dataToUse,
+    ...fallbackData,
     voting: 0
   };
 }
