@@ -1,10 +1,10 @@
-import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import UpvoteAirtable from '@/components/upvote-airtable.client';
 import CommentsSection from '@/components/comments-section.client';
 
 async function getCoffeeStoreData(id: string, queryId: string) {
+  // Always fetch fresh real data from SERP API first
   let realCoffeeData = null;
   
   try {
@@ -39,9 +39,10 @@ async function getCoffeeStoreData(id: string, queryId: string) {
     // Silently handle API errors
   }
   
-  const mockData = realCoffeeData || {
+  // Fallback data if SERP API fails
+  const fallbackData = {
     id,
-    name: `Coffee Store ${queryId}`,
+    name: `Coffee Shop ${queryId}`,
     address: 'Address not available',
     neighbourhood: 'Delaware County, PA',
     votes: 0,
@@ -55,60 +56,75 @@ async function getCoffeeStoreData(id: string, queryId: string) {
     userRatings: JSON.stringify([])
   };
 
+  const dataToUse = realCoffeeData || fallbackData;
+
   try {
-    // First check if we have it in Airtable
+    // Check if record exists in Airtable
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
     const airtableResponse = await fetch(`${baseUrl}/api/coffee-stores?id=${id}`, {
       cache: 'no-store'
     });
     
     if (airtableResponse.ok) {
-      const data = await airtableResponse.json();
+      const existingData = await airtableResponse.json();
+      
+      // If we have fresh real data and existing record has fake address, force update
+      if (realCoffeeData && (existingData.address === '123 Coffee Street, Coffee City' || !existingData.address || existingData.address === 'Address not available')) {
+        try {
+          const updateResponse = await fetch(`${baseUrl}/api/coffee-stores`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              ...realCoffeeData,
+              votes: existingData.votes || 0, // Keep existing vote count
+            }),
+          });
+          if (updateResponse.ok) {
+            const updatedData = await updateResponse.json();
+            return {
+              ...updatedData,
+              voting: updatedData.votes || 0
+            };
+          }
+        } catch (updateError) {
+          // Continue to return data with real address overlay
+        }
+      }
+      
+      // Return existing data but use real data if we have it
       return {
-        id: data.id,
-        name: data.name,
-        address: data.address || mockData.address,
-        neighbourhood: data.neighbourhood || mockData.neighbourhood,
-        votes: data.votes || 0,
-        imgUrl: data.imgUrl || mockData.imgUrl,
-        description: data.description || mockData.description,
-        rating: data.rating || mockData.rating,
-        totalReviews: data.totalReviews || mockData.totalReviews,
-        priceRange: data.priceRange || mockData.priceRange,
-        offerings: data.offerings || mockData.offerings,
-        comments: data.comments || mockData.comments,
-        userRatings: data.userRatings || mockData.userRatings
+        ...existingData,
+        ...(realCoffeeData ? {
+          name: realCoffeeData.name,
+          address: realCoffeeData.address,
+          neighbourhood: realCoffeeData.neighbourhood,
+          description: realCoffeeData.description,
+          rating: realCoffeeData.rating,
+          totalReviews: realCoffeeData.totalReviews,
+          priceRange: realCoffeeData.priceRange,
+          offerings: realCoffeeData.offerings,
+        } : {}),
+        voting: existingData.votes || 0
       };
     }
     
-    // If record doesn't exist, create it in Airtable
+    // If record doesn't exist, create it with real data
     if (airtableResponse.status === 404) {
-      
       const createResponse = await fetch(`${baseUrl}/api/coffee-stores`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(mockData),
-        cache: 'no-store'
+        body: JSON.stringify(dataToUse),
       });
-      
+
       if (createResponse.ok) {
         const createdData = await createResponse.json();
         return {
-          id: createdData.id,
-          name: createdData.name,
-          address: createdData.address || mockData.address,
-          neighbourhood: createdData.neighbourhood || mockData.neighbourhood,
-          votes: createdData.votes || 0,
-          imgUrl: createdData.imgUrl || mockData.imgUrl,
-          description: createdData.description || mockData.description,
-          rating: createdData.rating || mockData.rating,
-          totalReviews: createdData.totalReviews || mockData.totalReviews,
-          priceRange: createdData.priceRange || mockData.priceRange,
-          offerings: createdData.offerings || mockData.offerings,
-          comments: createdData.comments || mockData.comments,
-          userRatings: createdData.userRatings || mockData.userRatings
+          ...createdData,
+          voting: createdData.votes || 0
         };
       }
     }
@@ -116,8 +132,11 @@ async function getCoffeeStoreData(id: string, queryId: string) {
     // Handle Airtable errors gracefully
   }
 
-  // Final fallback to mock data
-  return mockData;
+  // Final fallback 
+  return {
+    ...dataToUse,
+    voting: 0
+  };
 }
 
 export default async function Page(props: {
@@ -144,7 +163,7 @@ export default async function Page(props: {
           
           <div className="bg-white rounded-lg shadow p-6">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Image */}
+              {/* Image Section */}
               <div className="lg:col-span-1">
                 <Image
                   src={coffeeStore.imgUrl}
@@ -155,50 +174,38 @@ export default async function Page(props: {
                 />
               </div>
               
-              {/* Main Info */}
+              {/* Content Section */}
               <div className="lg:col-span-2">
                 <div className="mb-6">
                   <h1 className="text-4xl font-bold mb-3">{coffeeStore.name}</h1>
                   
-                  {/* Rating & Reviews */}
+                  {/* Rating and Reviews */}
                   <div className="flex items-center gap-4 mb-4">
                     <div className="flex items-center">
                       {[1, 2, 3, 4, 5].map((star) => (
-                        <span
-                          key={star}
-                          className={`text-xl ${
-                            star <= Math.floor(coffeeStore.rating || 0)
-                              ? 'text-yellow-400'
-                              : 'text-gray-300'
-                          }`}
+                        <span 
+                          key={star} 
+                          className={`text-xl ${star <= Math.floor(coffeeStore.rating) ? 'text-yellow-400' : 'text-gray-300'}`}
                         >
                           ⭐
                         </span>
                       ))}
-                      <span className="ml-2 text-lg font-semibold">
-                        {coffeeStore.rating || 'No rating'}
-                      </span>
+                      <span className="ml-2 text-lg font-semibold">{coffeeStore.rating}</span>
                     </div>
-                    {coffeeStore.totalReviews > 0 && (
-                      <span className="text-gray-600">
-                        ({coffeeStore.totalReviews} reviews)
-                      </span>
-                    )}
+                    <span className="text-gray-600">({coffeeStore.totalReviews} reviews)</span>
                     {coffeeStore.priceRange && (
                       <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">
-                        {coffeeStore.priceRange}
+                        ${coffeeStore.priceRange}
                       </span>
                     )}
                   </div>
 
                   {/* Description */}
-                  {coffeeStore.description && (
-                    <div className="mb-6">
-                      <p className="text-gray-700 text-lg leading-relaxed">
-                        {coffeeStore.description}
-                      </p>
-                    </div>
-                  )}
+                  <div className="mb-6">
+                    <p className="text-gray-700 text-lg leading-relaxed">
+                      {coffeeStore.description}
+                    </p>
+                  </div>
 
                   {/* Address */}
                   <div className="space-y-2 mb-6">
@@ -206,13 +213,10 @@ export default async function Page(props: {
                       <span className="text-gray-600 text-sm w-20 flex-shrink-0">📍 Address:</span>
                       <span className="text-gray-800 text-sm font-medium">{coffeeStore.address}</span>
                     </div>
-                    
-                    {coffeeStore.neighbourhood && (
-                      <div className="flex items-start">
-                        <span className="text-gray-600 text-sm w-20 flex-shrink-0">🏘️ Area:</span>
-                        <span className="text-gray-800 text-sm">{coffeeStore.neighbourhood}</span>
-                      </div>
-                    )}
+                    <div className="flex items-start">
+                      <span className="text-gray-600 text-sm w-20 flex-shrink-0">🏘️ Area:</span>
+                      <span className="text-gray-800 text-sm">{coffeeStore.neighbourhood}</span>
+                    </div>
                   </div>
 
                   {/* Offerings */}
@@ -232,10 +236,10 @@ export default async function Page(props: {
                     </div>
                   )}
 
-                  {/* Voting */}
+                  {/* Voting Section */}
                   <div className="border-t pt-6 mb-6">
-                    <UpvoteAirtable
-                      initialVoting={coffeeStore.votes}
+                    <UpvoteAirtable 
+                      initialVoting={coffeeStore.voting || 0}
                       coffeeStoreId={coffeeStore.id}
                       coffeeStoreName={coffeeStore.name}
                       coffeeStoreAddress={coffeeStore.address}
@@ -246,15 +250,15 @@ export default async function Page(props: {
                 </div>
               </div>
             </div>
-            
-            {/* Comments & User Ratings Section */}
-            <div className="mt-8 border-t pt-6">
-              <CommentsSection 
-                coffeeStoreId={coffeeStore.id}
-                initialComments={coffeeStore.comments ? JSON.parse(coffeeStore.comments) : []}
-                initialUserRatings={coffeeStore.userRatings ? JSON.parse(coffeeStore.userRatings) : []}
-              />
-            </div>
+          </div>
+          
+          {/* Comments Section */}
+          <div className="mt-8 border-t pt-6">
+            <CommentsSection 
+              coffeeStoreId={coffeeStore.id}
+              initialComments={coffeeStore.comments ? JSON.parse(coffeeStore.comments) : []}
+              initialUserRatings={coffeeStore.userRatings ? JSON.parse(coffeeStore.userRatings) : []}
+            />
           </div>
         </div>
       </div>
@@ -278,6 +282,3 @@ export default async function Page(props: {
     );
   }
 }
-
-// Remove generateStaticParams to make this a fully dynamic route
-// This will prevent build-time pre-generation and allow on-demand rendering
