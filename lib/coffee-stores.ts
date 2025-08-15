@@ -16,14 +16,21 @@ const getListOfCoffeeStorePhotos = async () => {
 
 const transformCoffeeData = (
   idx: number,
-  result: MapboxType,
+  result: any,
   photos: Array<string> = []
 ) => {
   return {
-    id: result.id,
-    address: result.properties?.address || '',
-    name: result.text,
+    id: result.id || result.place_id,
+    address: result.properties?.address || result.address || '',
+    name: result.text || result.title || result.name,
     imgUrl: photos && photos.length > 0 ? photos[idx] : '',
+    voting: 0, // Default voting
+    // Rich data from SERP API
+    description: result.description || '',
+    rating: result.rating || 0,
+    totalReviews: result.reviews || 0,
+    priceRange: result.price || '',
+    offerings: JSON.stringify(result.offerings || []),
   };
 };
 
@@ -38,17 +45,23 @@ export const fetchCoffeeStores = async (longLat: string, limit: number) => {
     // Use SERP API to find real coffee shops nearby
     const serpApiUrl = `https://serpapi.com/search.json?engine=google_maps&q=coffee+shop&ll=@${lat},${lng},15z&type=search&api_key=${process.env.SERP_API_KEY}`;
     
-    console.log('Searching for coffee shops with SERP API...');
     const response = await fetch(serpApiUrl);
     const data = await response.json();
     
     // Extract local results
     const localResults = data.local_results || [];
-    console.log(`Found ${localResults.length} coffee shops via SERP API`);
     
-    // Transform SERP API results to our format
+    // Transform SERP API results to our format (keep all rich data)
     const coffeeShops = localResults.slice(0, limit).map((result: any, idx: number) => ({
       id: result.place_id || `coffee-shop-${idx}`,
+      title: result.title || result.name || 'Coffee Shop',
+      address: result.address || 'Address not available',
+      description: result.description || '',
+      rating: result.rating || 0,
+      reviews: result.reviews || 0,
+      price: result.price || '',
+      offerings: result.extensions?.find((ext: any) => ext.offerings)?.offerings || [],
+      // Keep legacy format for compatibility
       text: result.title || result.name || 'Coffee Shop',
       properties: {
         address: result.address || 'Address not available'

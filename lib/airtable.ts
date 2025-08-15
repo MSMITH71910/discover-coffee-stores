@@ -27,10 +27,22 @@ const findRecordByFilter = async (id: string) => {
 };
 
 export const createCoffeeStore = async (
-  coffeeStore: CoffeeStoreType,
+  coffeeStore: any,
   id: string
 ) => {
-  const { name, address, voting = 0, imgUrl } = coffeeStore;
+  const { 
+    name, 
+    address, 
+    voting = 0, 
+    imgUrl,
+    description = '',
+    rating = 0,
+    totalReviews = 0,
+    priceRange = '',
+    offerings = '[]',
+    comments = '[]',
+    userRatings = '[]'
+  } = coffeeStore;
 
   try {
     if (id) {
@@ -42,24 +54,27 @@ export const createCoffeeStore = async (
               id,
               name,
               address,
-              voting,
+              votes: voting,
               imgUrl,
+              description,
+              rating,
+              totalReviews,
+              priceRange,
+              offerings,
+              comments,
+              userRatings,
             },
           },
         ]);
         if (createRecords.length > 0) {
-          console.log('Created a store with id', id);
           return getMinifiedRecords(createRecords);
         }
       } else {
-        console.log('Coffee store exists');
         return records;
       }
-    } else {
-      console.error('Store id is missing');
     }
   } catch (error) {
-    console.error('Error creating or finding a store', error);
+    // Handle errors silently
   }
 };
 
@@ -81,16 +96,32 @@ export const updateCoffeeStore = async (id: string) => {
         ]);
 
         if (updatedRecords.length > 0) {
-          console.log('Created a store with id', id);
           return getMinifiedRecords(updatedRecords);
         }
-      } else {
-        console.log('Coffee store does not exist');
       }
-    } else {
-      console.error('Store id is missing');
     }
   } catch (error) {
-    console.error('Error upvoting a coffee store', error);
+    // Handle errors silently
+  }
+};
+
+// Export additional functions for comments API
+export { findRecordByFilter, getMinifiedRecords };
+
+export const updateRecord = async (recordId: string, fields: any) => {
+  try {
+    const updatedRecords = await table.update([
+      {
+        id: recordId,
+        fields,
+      },
+    ]);
+    
+    if (updatedRecords.length > 0) {
+      return updatedRecords[0];
+    }
+    throw new Error('No records updated');
+  } catch (error) {
+    throw error;
   }
 };

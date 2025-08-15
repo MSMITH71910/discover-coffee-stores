@@ -4,6 +4,14 @@ export type CoffeeStoreType = {
   imgUrl: string;
   address: string;
   voting: number;
+  // Rich data fields
+  description?: string;
+  rating?: number;
+  totalReviews?: number;
+  priceRange?: string;
+  offerings?: string;
+  comments?: string;
+  userRatings?: string;
 };
 
 export type MapboxType = {
