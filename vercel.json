@@ -1,0 +1,16 @@
+{
+  "buildCommand": "next build",
+  "devCommand": "next dev",
+  "installCommand": "yarn install",
+  "framework": "nextjs",
+  "functions": {
+    "app/api/*/route.ts": {
+      "runtime": "nodejs20.x"
+    },
+    "pages/api/*.js": {
+      "runtime": "nodejs20.x"
+    }
+  },
+  "regions": ["iad1"],
+  "crons": []
+}
