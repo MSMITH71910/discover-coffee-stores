@@ -68,8 +68,8 @@ async function getCoffeeStoreData(id: string, queryId: string) {
     if (airtableResponse.ok) {
       const existingData = await airtableResponse.json();
       
-      // If we have fresh real data and existing record has fake address, force update
-      if (realCoffeeData && (existingData.address === '123 Coffee Street, Coffee City' || !existingData.address || existingData.address === 'Address not available')) {
+      // Always use real data if we have it, and update Airtable
+      if (realCoffeeData) {
         try {
           const updateResponse = await fetch(`${baseUrl}/api/coffee-stores`, {
             method: 'POST',
@@ -93,19 +93,19 @@ async function getCoffeeStoreData(id: string, queryId: string) {
         }
       }
       
-      // Return existing data but use real data if we have it
+      // Always prioritize real data if we have it
+      if (realCoffeeData) {
+        return {
+          ...realCoffeeData,
+          votes: existingData.votes || 0,
+          voting: existingData.votes || 0,
+          recordId: existingData.recordId
+        };
+      }
+      
+      // Return existing data only if no real data available
       return {
         ...existingData,
-        ...(realCoffeeData ? {
-          name: realCoffeeData.name,
-          address: realCoffeeData.address,
-          neighbourhood: realCoffeeData.neighbourhood,
-          description: realCoffeeData.description,
-          rating: realCoffeeData.rating,
-          totalReviews: realCoffeeData.totalReviews,
-          priceRange: realCoffeeData.priceRange,
-          offerings: realCoffeeData.offerings,
-        } : {}),
         voting: existingData.votes || 0
       };
     }
