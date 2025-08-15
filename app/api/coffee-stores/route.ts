@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 
 const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID;
 const AIRTABLE_TOKEN = process.env.AIRTABLE_TOKEN;
-const AIRTABLE_TABLE_NAME = 'coffee-stores';
+const AIRTABLE_TABLE_NAME = 'tblDEV9W7lkoSexsf'; // Using table ID instead of name
 
 interface CoffeeStore {
   id: string;
