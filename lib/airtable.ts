@@ -9,6 +9,10 @@ const table = base('Table 1');
 
 const getMinifiedRecords = (records: Array<AirtableRecordType>) => {
   return records.map((record: AirtableRecordType) => {
+    console.log('Raw record fields:', Object.keys(record.fields || {}));
+    console.log('Comments field raw:', record.fields?.comments);
+    console.log('UserRatings field raw:', record.fields?.userRatings);
+    
     return {
       recordId: record.id,
       ...record.fields,
