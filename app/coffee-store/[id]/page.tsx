@@ -245,32 +245,14 @@ export default async function Page(props: {
             </div>
           </div>
           
-          {/* Comments Section */}
-          <div className="mt-8 border-t pt-8 bg-gray-50 p-6 rounded-lg">
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">💬 Customer Reviews & Comments</h2>
-            <div className="bg-white p-4 rounded border mb-4">
-              <p className="text-sm text-gray-600">Debug info:</p>
-              <pre className="text-xs bg-gray-100 p-2 rounded mt-2">{JSON.stringify({
-                id: coffeeStore.id,
-                hasComments: !!coffeeStore.comments,
-                hasUserRatings: !!coffeeStore.userRatings,
-                commentsRaw: coffeeStore.comments,
-                userRatingsRaw: coffeeStore.userRatings
-              }, null, 2)}</pre>
+          {/* Comments Section - Simple Test */}
+          <div className="mt-8 border-t pt-8 bg-red-100 p-6 rounded-lg">
+            <h2 className="text-3xl font-bold text-red-900 mb-6">🔴 COMMENTS TEST SECTION</h2>
+            <p className="text-lg text-red-700">If you can see this, the section renders properly!</p>
+            <div className="bg-white p-4 rounded mt-4">
+              <p><strong>Coffee Store ID:</strong> {coffeeStore.id}</p>
+              <p><strong>Store Name:</strong> {coffeeStore.name}</p>
             </div>
-            <CommentsSection 
-              coffeeStoreId={coffeeStore.id}
-              initialComments={[
-                {
-                  id: "debug-comment",
-                  name: "Debug User", 
-                  comment: "This is a hardcoded comment to test if the component works!",
-                  rating: 5,
-                  timestamp: new Date().toISOString()
-                }
-              ]}
-              initialUserRatings={[5]}
-            />
           </div>
         </div>
       </div>
