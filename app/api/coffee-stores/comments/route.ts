@@ -14,8 +14,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Try to find existing record
-    const records = await findRecordByFilter(`{id} = "${id}"`);
-    
+    const records = await findRecordByFilter(id);
     let record;
     
     if (records.length === 0) {
