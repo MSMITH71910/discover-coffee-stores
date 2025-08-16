@@ -45,6 +45,12 @@ export async function GET(request: Request) {
     
     if (findData.records && findData.records.length > 0) {
       const record = findData.records[0];
+      
+      // Debug: log all available fields
+      console.log('Available fields:', Object.keys(record.fields));
+      console.log('Comments field:', record.fields.comments);
+      console.log('UserRatings field:', record.fields.userRatings);
+      
       return NextResponse.json({
         id: record.fields.id,
         name: record.fields.name,
@@ -59,7 +65,9 @@ export async function GET(request: Request) {
         totalReviews: record.fields.totalReviews || 0,
         priceRange: record.fields.priceRange || '',
         offerings: record.fields.offerings || '[]',
-        recordId: record.id
+        recordId: record.id,
+        // Debug: include all raw fields
+        _debug_allFields: record.fields
       });
     }
     
