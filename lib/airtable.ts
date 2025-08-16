@@ -5,7 +5,7 @@ var base = new Airtable({ apiKey: process.env.AIRTABLE_TOKEN }).base(
   process.env.AIRTABLE_BASE_ID || 'appN9npoXRbfVD1hC'
 );
 
-const table = base('coffee-stores');
+const table = base('Coffee Stores Reviews');
 
 const getMinifiedRecords = (records: Array<AirtableRecordType>) => {
   return records.map((record: AirtableRecordType) => {
