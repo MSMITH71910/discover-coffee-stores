@@ -1,6 +1,67 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { findRecordByFilter, updateRecord, createCoffeeStore } from '@/lib/airtable';
 
+const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID;
+const AIRTABLE_TOKEN = process.env.AIRTABLE_TOKEN;
+const AIRTABLE_TABLE_NAME = 'Table 1';
+
+// GET - Retrieve comments for a specific coffee store
+export async function GET(request: NextRequest) {
+  console.log('🔍 COMMENTS GET - Direct retrieval in comments route');
+  
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+    
+    if (!id) {
+      return NextResponse.json({ error: 'Coffee store ID required' }, { status: 400 });
+    }
+
+    if (!AIRTABLE_BASE_ID || !AIRTABLE_TOKEN) {
+      return NextResponse.json({ error: 'Airtable configuration missing' }, { status: 500 });
+    }
+
+    // Use our existing findRecordByFilter function
+    const records = await findRecordByFilter(id);
+    
+    if (records && records.length > 0) {
+      const record = records[0];
+      console.log('🔍 COMMENTS GET - Record found with fields:', Object.keys(record));
+      
+      return NextResponse.json({
+        success: true,
+        id: record.id,
+        comments: record.comments || '[]',
+        userRatings: record.userRatings || '[]',
+        votes: record.votes || 0,
+        recordId: record.recordId,
+        _debug: {
+          hasComments: !!record.comments,
+          commentsValue: record.comments,
+          allFields: Object.keys(record)
+        }
+      });
+    }
+    
+    console.log('🔍 COMMENTS GET - No records found for ID:', id);
+    return NextResponse.json({ 
+      success: false,
+      error: 'Coffee store not found',
+      comments: '[]',
+      userRatings: '[]'
+    }, { status: 404 });
+    
+  } catch (error: any) {
+    console.error('🔍 COMMENTS GET - Error:', error);
+    return NextResponse.json({ 
+      success: false,
+      error: 'Failed to fetch comments',
+      comments: '[]',
+      userRatings: '[]'
+    }, { status: 500 });
+  }
+}
+
 export async function POST(request: NextRequest) {
   if (request.method !== 'POST') {
     return NextResponse.json({ message: 'Method not allowed' }, { status: 405 });

@@ -46,8 +46,9 @@ async function getCoffeeStoreData(id: string, queryId: string) {
     try {
       const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
       
-      // First try the dedicated comments endpoint
-      const commentsResponse = await fetch(`${baseUrl}/api/coffee-stores/comments/get?id=${id}`, {
+      // First try the comments endpoint with GET method
+      const commentsResponse = await fetch(`${baseUrl}/api/coffee-stores/comments?id=${id}`, {
+        method: 'GET',
         cache: 'no-store'
       });
       
