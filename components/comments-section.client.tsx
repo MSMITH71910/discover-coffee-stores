@@ -32,24 +32,32 @@ export default function CommentsSection({
   // PERSISTENCE FIX: Load saved comments when component mounts
   useEffect(() => {
     const loadSavedComments = async () => {
+      console.log('🔍 COMMENTS LOADING - Attempting to load comments for:', coffeeStoreId);
       try {
         // Try to fetch comments directly from our working API
         const response = await fetch(`/api/coffee-stores?id=${coffeeStoreId}`, {
           cache: 'no-store'
         });
         
+        console.log('🔍 COMMENTS LOADING - Response status:', response.status);
+        
         if (response.ok) {
           const data = await response.json();
+          console.log('🔍 COMMENTS LOADING - Response data keys:', Object.keys(data));
+          console.log('🔍 COMMENTS LOADING - Comments field:', data.comments);
+          console.log('🔍 COMMENTS LOADING - UserRatings field:', data.userRatings);
           
           // Parse comments if they exist
           if (data.comments && data.comments !== '[]') {
             try {
               const savedComments = JSON.parse(data.comments);
+              console.log('🔍 COMMENTS LOADING - Parsed comments:', savedComments);
               if (Array.isArray(savedComments) && savedComments.length > 0) {
+                console.log('✅ COMMENTS LOADING - Setting comments:', savedComments.length);
                 setComments(savedComments);
               }
             } catch (e) {
-              // Ignore parse errors
+              console.log('❌ COMMENTS LOADING - Parse error for comments:', e);
             }
           }
           
@@ -57,25 +65,30 @@ export default function CommentsSection({
           if (data.userRatings && data.userRatings !== '[]') {
             try {
               const savedRatings = JSON.parse(data.userRatings);
+              console.log('🔍 COMMENTS LOADING - Parsed ratings:', savedRatings);
               if (Array.isArray(savedRatings) && savedRatings.length > 0) {
+                console.log('✅ COMMENTS LOADING - Setting ratings:', savedRatings.length);
                 setUserRatings(savedRatings);
               }
             } catch (e) {
-              // Ignore parse errors
+              console.log('❌ COMMENTS LOADING - Parse error for ratings:', e);
             }
           }
+        } else {
+          console.log('❌ COMMENTS LOADING - API response not OK:', response.status);
         }
       } catch (error) {
-        console.log('Could not load saved comments, using initial data');
+        console.log('❌ COMMENTS LOADING - Network/fetch error:', error);
         // If loading fails, keep using initialComments which is fine
       }
     };
     
-    // Only load if we don't have initial comments
-    if ((!initialComments || initialComments.length === 0) && coffeeStoreId) {
+    // Always try to load comments, regardless of initialComments
+    if (coffeeStoreId) {
+      console.log('🚀 COMMENTS LOADING - Starting load for coffeeStoreId:', coffeeStoreId);
       loadSavedComments();
     }
-  }, [coffeeStoreId, initialComments]);
+  }, [coffeeStoreId]);
 
   // Calculate average user rating
   const allRatings = [...userRatings, ...comments.map(c => c.rating)];
