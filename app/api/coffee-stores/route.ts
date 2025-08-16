@@ -16,9 +16,11 @@ interface CoffeeStore {
 
 // GET - Retrieve a coffee store (TypeScript fixed)
 export async function GET(request: Request) {
+  console.log('🔍 GET REQUEST STARTED for coffee store retrieval');
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
+    console.log('🔍 GET REQUEST - ID:', id);
     
     if (!id) {
       return NextResponse.json({ error: 'Coffee store ID required' }, { status: 400 });
@@ -83,11 +85,13 @@ export async function GET(request: Request) {
   }
 }
 
-// POST - Create or update a coffee store
+// POST - Create or update a coffee store  
 export async function POST(request: Request) {
+  console.log('🔍 POST REQUEST STARTED for coffee store creation/update');
   try {
     const body = await request.json();
     const { id, name, address, neighbourhood, imgUrl } = body;
+    console.log('🔍 POST REQUEST - ID:', id);
 
     if (!id || !name) {
       return NextResponse.json({ error: 'Coffee store ID and name required' }, { status: 400 });
