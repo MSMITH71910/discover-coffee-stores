@@ -54,15 +54,9 @@ export const createCoffeeStore = async (
               id,
               name,
               address,
-              votes: voting,
+              neighbourhood: address, // Use address as fallback for neighbourhood  
+              votes: voting || 0,
               imgUrl,
-              description,
-              rating,
-              totalReviews,
-              priceRange,
-              offerings,
-              comments,
-              userRatings,
             },
           },
         ]);
@@ -84,13 +78,13 @@ export const updateCoffeeStore = async (id: string) => {
       const records = await findRecordByFilter(id);
       if (records.length !== 0) {
         const record = records[0];
-        const updatedVoting = record.voting + 1;
+        const updatedVotes = (record.votes || 0) + 1;
 
         const updatedRecords = await table.update([
           {
             id: record.recordId,
             fields: {
-              voting: updatedVoting,
+              votes: updatedVotes,
             },
           },
         ]);
