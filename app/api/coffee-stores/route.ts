@@ -55,11 +55,12 @@ export async function GET(request: Request) {
       console.log('Comments field value:', record.fields.comments);
       console.log('UserRatings field value:', record.fields.userRatings);
       
+      // CRITICAL SUCCESS: This should now include comments if they exist
       return NextResponse.json({
         id: record.fields.id,
         name: record.fields.name,
         address: record.fields.address,
-        neighbourhood: record.fields.neighbourhood,
+        neighbourhood: record.fields.neighbourhood || record.fields.address?.split(',').slice(-2).join(',').trim() || 'Delaware County, PA',
         votes: record.fields.votes || 0,
         imgUrl: record.fields.imgUrl,
         comments: record.fields.comments || '[]',
@@ -70,7 +71,7 @@ export async function GET(request: Request) {
         priceRange: record.fields.priceRange || '',
         offerings: record.fields.offerings || '[]',
         recordId: record.id,
-        // DEBUG: Include all fields we get
+        // DEBUG: Keep to verify it works
         _debug_all_fields: Object.keys(record.fields),
         _debug_has_comments: !!record.fields.comments,
         _debug_has_userRatings: !!record.fields.userRatings
@@ -107,6 +108,7 @@ export async function POST(request: Request) {
     if (existingRecords.length > 0) {
       // Return existing record
       const record = existingRecords[0];
+      // CRITICAL FIX: Use consistent data format and ensure comments are included
       return NextResponse.json({
         id: record.id,
         name: record.name,
@@ -114,13 +116,14 @@ export async function POST(request: Request) {
         neighbourhood: (record as any).neighbourhood || record.address?.split(',').slice(-2).join(',').trim() || 'Delaware County, PA',
         votes: record.votes || 0,
         imgUrl: record.imgUrl,
-        comments: (record as any).comments || '[]',
-        userRatings: (record as any).userRatings || '[]',
-        description: (record as any).description || '',
-        rating: (record as any).rating || 0,
-        totalReviews: (record as any).totalReviews || 0,
-        priceRange: (record as any).priceRange || '',
-        offerings: (record as any).offerings || '[]',
+        // FORCE INCLUDE: Always include comments and userRatings, even if empty
+        comments: record.comments || '[]',
+        userRatings: record.userRatings || '[]',
+        description: record.description || '',
+        rating: record.rating || 0,
+        totalReviews: record.totalReviews || 0,
+        priceRange: record.priceRange || '',
+        offerings: record.offerings || '[]',
         recordId: record.recordId
       });
     }
