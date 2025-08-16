@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { findRecordByFilter } from '@/lib/airtable';
 
 const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID;
 const AIRTABLE_TOKEN = process.env.AIRTABLE_TOKEN;
@@ -27,47 +28,27 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Airtable configuration missing' }, { status: 500 });
     }
 
-    // Search for existing record
-    const findUrl = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_NAME}?filterByFormula={id}="${id}"`;
+    // Use our proven findRecordByFilter function
+    const records = await findRecordByFilter(id);
     
-    const findResponse = await fetch(findUrl, {
-      headers: {
-        'Authorization': `Bearer ${AIRTABLE_TOKEN}`,
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (!findResponse.ok) {
-      throw new Error(`Airtable API error: ${findResponse.status}`);
-    }
-
-    const findData = await findResponse.json();
-    
-    if (findData.records && findData.records.length > 0) {
-      const record = findData.records[0];
-      
-      // Debug: log all available fields
-      console.log('Available fields:', Object.keys(record.fields));
-      console.log('Comments field:', record.fields.comments);
-      console.log('UserRatings field:', record.fields.userRatings);
+    if (records.length > 0) {
+      const record = records[0];
       
       return NextResponse.json({
-        id: record.fields.id,
-        name: record.fields.name,
-        address: record.fields.address,
-        neighbourhood: record.fields.neighbourhood,
-        votes: record.fields.votes || 0,
-        imgUrl: record.fields.imgUrl,
-        comments: record.fields.comments || '[]',
-        userRatings: record.fields.userRatings || '[]',
-        description: record.fields.description || '',
-        rating: record.fields.rating || 0,
-        totalReviews: record.fields.totalReviews || 0,
-        priceRange: record.fields.priceRange || '',
-        offerings: record.fields.offerings || '[]',
-        recordId: record.id,
-        // Debug: include all raw fields
-        _debug_allFields: record.fields
+        id: record.id,
+        name: record.name,
+        address: record.address,
+        neighbourhood: record.neighbourhood,
+        votes: record.votes || 0,
+        imgUrl: record.imgUrl,
+        comments: record.comments || '[]',
+        userRatings: record.userRatings || '[]',
+        description: record.description || '',
+        rating: record.rating || 0,
+        totalReviews: record.totalReviews || 0,
+        priceRange: record.priceRange || '',
+        offerings: record.offerings || '[]',
+        recordId: record.recordId
       });
     }
     
@@ -93,36 +74,27 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Airtable configuration missing' }, { status: 500 });
     }
 
-    // Check if record already exists
-    const findUrl = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_NAME}?filterByFormula={id}="${id}"`;
+    // Check if record already exists using our proven function
+    const existingRecords = await findRecordByFilter(id);
     
-    const findResponse = await fetch(findUrl, {
-      headers: {
-        'Authorization': `Bearer ${AIRTABLE_TOKEN}`,
-        'Content-Type': 'application/json',
-      },
-    });
-
-    const findData = await findResponse.json();
-    
-    if (findData.records && findData.records.length > 0) {
+    if (existingRecords.length > 0) {
       // Return existing record
-      const record = findData.records[0];
+      const record = existingRecords[0];
       return NextResponse.json({
-        id: record.fields.id,
-        name: record.fields.name,
-        address: record.fields.address,
-        neighbourhood: record.fields.neighbourhood,
-        votes: record.fields.votes || 0,
-        imgUrl: record.fields.imgUrl,
-        comments: record.fields.comments || '[]',
-        userRatings: record.fields.userRatings || '[]',
-        description: record.fields.description || '',
-        rating: record.fields.rating || 0,
-        totalReviews: record.fields.totalReviews || 0,
-        priceRange: record.fields.priceRange || '',
-        offerings: record.fields.offerings || '[]',
-        recordId: record.id
+        id: record.id,
+        name: record.name,
+        address: record.address,
+        neighbourhood: record.neighbourhood,
+        votes: record.votes || 0,
+        imgUrl: record.imgUrl,
+        comments: record.comments || '[]',
+        userRatings: record.userRatings || '[]',
+        description: record.description || '',
+        rating: record.rating || 0,
+        totalReviews: record.totalReviews || 0,
+        priceRange: record.priceRange || '',
+        offerings: record.offerings || '[]',
+        recordId: record.recordId
       });
     }
 
