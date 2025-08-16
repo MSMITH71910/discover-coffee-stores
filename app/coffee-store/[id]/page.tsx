@@ -229,16 +229,6 @@ export default async function Page(props: {
                     </div>
                   )}
 
-                  {/* Test Section */}
-                  <div className="border-4 border-red-500 bg-red-100 p-8 mb-6">
-                    <h1 className="text-4xl font-bold text-red-900">🚨 TEST COMMENTS SECTION</h1>
-                    <p className="text-xl text-red-800 mt-4">THIS SHOULD BE VERY VISIBLE!</p>
-                    <div className="bg-white p-4 mt-4 border-2 border-red-300">
-                      <p>Store ID: {coffeeStore.id}</p>
-                      <p>Store Name: {coffeeStore.name}</p>
-                    </div>
-                  </div>
-
                   {/* Voting Section */}
                   <div className="border-t pt-6 mb-6">
                     <UpvoteAirtable 
@@ -255,14 +245,29 @@ export default async function Page(props: {
             </div>
           </div>
           
-          {/* Comments Section - Simple Test */}
-          <div className="mt-8 border-t pt-8 bg-red-100 p-6 rounded-lg">
-            <h2 className="text-3xl font-bold text-red-900 mb-6">🔴 COMMENTS TEST SECTION</h2>
-            <p className="text-lg text-red-700">If you can see this, the section renders properly!</p>
-            <div className="bg-white p-4 rounded mt-4">
-              <p><strong>Coffee Store ID:</strong> {coffeeStore.id}</p>
-              <p><strong>Store Name:</strong> {coffeeStore.name}</p>
-            </div>
+          {/* Comments Section */}
+          <div className="mt-8 border-t pt-6">
+            <CommentsSection 
+              coffeeStoreId={coffeeStore.id}
+              initialComments={(() => {
+                try {
+                  return coffeeStore.comments && coffeeStore.comments !== '[]' 
+                    ? JSON.parse(coffeeStore.comments) 
+                    : [];
+                } catch {
+                  return [];
+                }
+              })()}
+              initialUserRatings={(() => {
+                try {
+                  return coffeeStore.userRatings && coffeeStore.userRatings !== '[]'
+                    ? JSON.parse(coffeeStore.userRatings)
+                    : [];
+                } catch {
+                  return [];
+                }
+              })()}
+            />
           </div>
         </div>
       </div>
