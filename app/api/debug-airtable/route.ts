@@ -20,17 +20,18 @@ export async function GET() {
       
       const table = base('Table 1');
       
-      // Get first record to see field structure
+      // Get all records to see field structure
       const records = await table.select({
-        maxRecords: 1
+        maxRecords: 5
       }).firstPage();
       
       if (records.length > 0) {
-        fieldStructure = {
-          recordId: records[0].id,
-          fields: Object.keys(records[0].fields || {}),
-          fieldValues: records[0].fields
-        };
+        fieldStructure = records.map((record, index) => ({
+          recordNum: index + 1,
+          recordId: record.id,
+          fields: Object.keys(record.fields || {}),
+          fieldValues: record.fields
+        }));
         tableTest = `Success - Found ${records.length} records`;
       } else {
         tableTest = 'Success - No records found';
