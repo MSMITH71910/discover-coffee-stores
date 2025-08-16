@@ -48,6 +48,11 @@ export async function GET(request: Request) {
     if (findData.records && findData.records.length > 0) {
       const record = findData.records[0];
       
+      // DEBUG: Log what fields we actually get from Airtable
+      console.log('Airtable record fields:', Object.keys(record.fields));
+      console.log('Comments field value:', record.fields.comments);
+      console.log('UserRatings field value:', record.fields.userRatings);
+      
       return NextResponse.json({
         id: record.fields.id,
         name: record.fields.name,
@@ -62,7 +67,11 @@ export async function GET(request: Request) {
         totalReviews: record.fields.totalReviews || 0,
         priceRange: record.fields.priceRange || '',
         offerings: record.fields.offerings || '[]',
-        recordId: record.id
+        recordId: record.id,
+        // DEBUG: Include all fields we get
+        _debug_all_fields: Object.keys(record.fields),
+        _debug_has_comments: !!record.fields.comments,
+        _debug_has_userRatings: !!record.fields.userRatings
       });
     }
     
