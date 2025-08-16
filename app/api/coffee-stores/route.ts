@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 
 const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID;
 const AIRTABLE_TOKEN = process.env.AIRTABLE_TOKEN;
-const AIRTABLE_TABLE_NAME = 'tbl63q5444pDhM1Lv'; // Updated to correct table ID
+const AIRTABLE_TABLE_NAME = 'Table 1'; // Table name, not ID
 
 interface CoffeeStore {
   id: string;
@@ -52,6 +52,13 @@ export async function GET(request: Request) {
         neighbourhood: record.fields.neighbourhood,
         votes: record.fields.votes || 0,
         imgUrl: record.fields.imgUrl,
+        comments: record.fields.comments || '[]',
+        userRatings: record.fields.userRatings || '[]',
+        description: record.fields.description || '',
+        rating: record.fields.rating || 0,
+        totalReviews: record.fields.totalReviews || 0,
+        priceRange: record.fields.priceRange || '',
+        offerings: record.fields.offerings || '[]',
         recordId: record.id
       });
     }
@@ -100,6 +107,13 @@ export async function POST(request: Request) {
         neighbourhood: record.fields.neighbourhood,
         votes: record.fields.votes || 0,
         imgUrl: record.fields.imgUrl,
+        comments: record.fields.comments || '[]',
+        userRatings: record.fields.userRatings || '[]',
+        description: record.fields.description || '',
+        rating: record.fields.rating || 0,
+        totalReviews: record.fields.totalReviews || 0,
+        priceRange: record.fields.priceRange || '',
+        offerings: record.fields.offerings || '[]',
         recordId: record.id
       });
     }

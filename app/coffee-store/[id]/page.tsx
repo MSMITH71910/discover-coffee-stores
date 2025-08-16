@@ -39,10 +39,10 @@ async function getCoffeeStoreData(id: string, queryId: string) {
     // Silently handle API errors
   }
 
-  // If we have real data, use it immediately - don't let Airtable override it
+  // If we have real data, use it immediately - but get user data from Airtable
   if (realCoffeeData) {
-    // Try to get vote count from Airtable, but always use real data for everything else
-    let voteCount = 0;
+    // Try to get stored user data from Airtable
+    let airtableData = { votes: 0, comments: '[]', userRatings: '[]' };
     try {
       const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
       const airtableResponse = await fetch(`${baseUrl}/api/coffee-stores?id=${id}`, {
@@ -51,17 +51,23 @@ async function getCoffeeStoreData(id: string, queryId: string) {
       
       if (airtableResponse.ok) {
         const existingData = await airtableResponse.json();
-        voteCount = existingData.votes || 0;
+        airtableData = {
+          votes: existingData.votes || 0,
+          comments: existingData.comments || '[]',
+          userRatings: existingData.userRatings || '[]'
+        };
       }
     } catch (error) {
-      // Use 0 votes if Airtable fails
+      // Use default values if Airtable fails
     }
     
-    // Always return real data with vote count from Airtable
+    // Return real data with user data from Airtable
     return {
       ...realCoffeeData,
-      votes: voteCount,
-      voting: voteCount
+      votes: airtableData.votes,
+      voting: airtableData.votes,
+      comments: airtableData.comments,
+      userRatings: airtableData.userRatings
     };
   }
 
