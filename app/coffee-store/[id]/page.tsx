@@ -246,7 +246,8 @@ export default async function Page(props: {
           </div>
           
           {/* Comments Section */}
-          <div className="mt-8 border-t pt-6">
+          <div className="mt-8 border-t pt-8 bg-gray-50 p-6 rounded-lg">
+            <h2 className="text-3xl font-bold text-gray-900 mb-6">💬 Customer Reviews & Comments</h2>
             <CommentsSection 
               coffeeStoreId={coffeeStore.id}
               initialComments={(() => {
