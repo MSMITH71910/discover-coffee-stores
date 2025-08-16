@@ -41,24 +41,43 @@ async function getCoffeeStoreData(id: string, queryId: string) {
 
   // If we have real data, use it immediately - but get user data from Airtable
   if (realCoffeeData) {
-    // Try to get stored user data from Airtable
+    // Try to get stored user data from Airtable using dedicated comments endpoint
     let airtableData = { votes: 0, comments: '[]', userRatings: '[]' };
     try {
       const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
-      const airtableResponse = await fetch(`${baseUrl}/api/coffee-stores?id=${id}`, {
+      
+      // First try the dedicated comments endpoint
+      const commentsResponse = await fetch(`${baseUrl}/api/coffee-stores/comments/get?id=${id}`, {
         cache: 'no-store'
       });
       
-      if (airtableResponse.ok) {
-        const existingData = await airtableResponse.json();
-        airtableData = {
-          votes: existingData.votes || 0,
-          comments: existingData.comments || '[]',
-          userRatings: existingData.userRatings || '[]'
-        };
+      if (commentsResponse.ok) {
+        const commentsData = await commentsResponse.json();
+        if (commentsData.success) {
+          airtableData = {
+            votes: commentsData.votes || 0,
+            comments: commentsData.comments || '[]',
+            userRatings: commentsData.userRatings || '[]'
+          };
+        }
+      } else {
+        // Fallback to original endpoint
+        const airtableResponse = await fetch(`${baseUrl}/api/coffee-stores?id=${id}`, {
+          cache: 'no-store'
+        });
+        
+        if (airtableResponse.ok) {
+          const existingData = await airtableResponse.json();
+          airtableData = {
+            votes: existingData.votes || 0,
+            comments: existingData.comments || '[]',
+            userRatings: existingData.userRatings || '[]'
+          };
+        }
       }
     } catch (error) {
-      // Use default values if Airtable fails
+      console.error('Error fetching user data:', error);
+      // Use default values if both endpoints fail
     }
     
     // Return real data with user data from Airtable
