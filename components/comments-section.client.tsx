@@ -187,10 +187,12 @@ export default function CommentsSection({
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Name Input */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="user-name" className="block text-sm font-medium text-gray-700 mb-1">
               Your Name *
             </label>
             <input
+              id="user-name"
+              name="userName"
               type="text"
               value={userName}
               onChange={(e) => setUserName(e.target.value)}
@@ -226,10 +228,12 @@ export default function CommentsSection({
 
           {/* Comment Input */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="user-comment" className="block text-sm font-medium text-gray-700 mb-1">
               Your Comment *
             </label>
             <textarea
+              id="user-comment"
+              name="userComment"
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
               placeholder="Tell us about your experience at this coffee shop..."
