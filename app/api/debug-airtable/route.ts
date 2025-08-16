@@ -16,7 +16,7 @@ export async function GET() {
         apiKey: process.env.AIRTABLE_TOKEN 
       }).base(process.env.AIRTABLE_BASE_ID || 'appN9npoXRbfVD1hC');
       
-      const table = base('coffee-stores');
+      const table = base('Coffee Stores Reviews');
       
       // Try a simple select operation
       const records = await table.select({
