@@ -28,9 +28,15 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Airtable configuration missing' }, { status: 500 });
     }
 
-    // Use direct API call with proper URL encoding
+    // Use direct API call with explicit field list
     const filterFormula = encodeURIComponent(`{id}="${id}"`);
-    const findUrl = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TABLE_NAME)}?filterByFormula=${filterFormula}`;
+    const fields = [
+      'id', 'name', 'address', 'neighbourhood', 'votes', 'imgUrl', 
+      'comments', 'userRatings', 'description', 'rating', 'totalReviews', 
+      'priceRange', 'offerings'
+    ].map(field => `fields%5B%5D=${encodeURIComponent(field)}`).join('&');
+    
+    const findUrl = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TABLE_NAME)}?filterByFormula=${filterFormula}&${fields}`;
     
     const findResponse = await fetch(findUrl, {
       headers: {
