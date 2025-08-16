@@ -249,8 +249,16 @@ export default async function Page(props: {
           <div className="mt-8 border-t pt-6">
             <CommentsSection 
               coffeeStoreId={coffeeStore.id}
-              initialComments={coffeeStore.comments ? JSON.parse(coffeeStore.comments) : []}
-              initialUserRatings={coffeeStore.userRatings ? JSON.parse(coffeeStore.userRatings) : []}
+              initialComments={[
+                {
+                  id: "test123",
+                  name: "Test User",
+                  comment: "Testing if comments component works!",
+                  rating: 5,
+                  timestamp: new Date().toISOString()
+                }
+              ]}
+              initialUserRatings={[5]}
             />
           </div>
         </div>
