@@ -249,16 +249,24 @@ export default async function Page(props: {
           <div className="mt-8 border-t pt-6">
             <CommentsSection 
               coffeeStoreId={coffeeStore.id}
-              initialComments={[
-                {
-                  id: "test123",
-                  name: "Test User",
-                  comment: "Testing if comments component works!",
-                  rating: 5,
-                  timestamp: new Date().toISOString()
+              initialComments={(() => {
+                try {
+                  return coffeeStore.comments && coffeeStore.comments !== '[]' 
+                    ? JSON.parse(coffeeStore.comments) 
+                    : [];
+                } catch {
+                  return [];
                 }
-              ]}
-              initialUserRatings={[5]}
+              })()}
+              initialUserRatings={(() => {
+                try {
+                  return coffeeStore.userRatings && coffeeStore.userRatings !== '[]'
+                    ? JSON.parse(coffeeStore.userRatings)
+                    : [];
+                } catch {
+                  return [];
+                }
+              })()}
             />
           </div>
         </div>
