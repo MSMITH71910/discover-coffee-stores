@@ -28,15 +28,9 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Airtable configuration missing' }, { status: 500 });
     }
 
-    // Use direct API call with explicit field list
+    // Use direct API call - get ALL fields (no field filtering to ensure we get everything)
     const filterFormula = encodeURIComponent(`{id}="${id}"`);
-    const fields = [
-      'id', 'name', 'address', 'neighbourhood', 'votes', 'imgUrl', 
-      'comments', 'userRatings', 'description', 'rating', 'totalReviews', 
-      'priceRange', 'offerings'
-    ].map(field => `fields%5B%5D=${encodeURIComponent(field)}`).join('&');
-    
-    const findUrl = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TABLE_NAME)}?filterByFormula=${filterFormula}&${fields}`;
+    const findUrl = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TABLE_NAME)}?filterByFormula=${filterFormula}`;
     
     const findResponse = await fetch(findUrl, {
       headers: {
