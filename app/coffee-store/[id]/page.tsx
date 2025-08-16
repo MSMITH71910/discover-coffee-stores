@@ -229,6 +229,16 @@ export default async function Page(props: {
                     </div>
                   )}
 
+                  {/* Test Section */}
+                  <div className="border-4 border-red-500 bg-red-100 p-8 mb-6">
+                    <h1 className="text-4xl font-bold text-red-900">🚨 TEST COMMENTS SECTION</h1>
+                    <p className="text-xl text-red-800 mt-4">THIS SHOULD BE VERY VISIBLE!</p>
+                    <div className="bg-white p-4 mt-4 border-2 border-red-300">
+                      <p>Store ID: {coffeeStore.id}</p>
+                      <p>Store Name: {coffeeStore.name}</p>
+                    </div>
+                  </div>
+
                   {/* Voting Section */}
                   <div className="border-t pt-6 mb-6">
                     <UpvoteAirtable 
