@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface Comment {
   id: string;
@@ -27,9 +27,58 @@ export default function CommentsSection({
   const [userName, setUserName] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState('');
+  const [userRatings, setUserRatings] = useState<number[]>(initialUserRatings || []);
+  
+  // PERSISTENCE FIX: Load saved comments when component mounts
+  useEffect(() => {
+    const loadSavedComments = async () => {
+      try {
+        // Try to fetch comments directly from our working API
+        const response = await fetch(`/api/coffee-stores?id=${coffeeStoreId}`, {
+          cache: 'no-store'
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          
+          // Parse comments if they exist
+          if (data.comments && data.comments !== '[]') {
+            try {
+              const savedComments = JSON.parse(data.comments);
+              if (Array.isArray(savedComments) && savedComments.length > 0) {
+                setComments(savedComments);
+              }
+            } catch (e) {
+              // Ignore parse errors
+            }
+          }
+          
+          // Parse user ratings if they exist
+          if (data.userRatings && data.userRatings !== '[]') {
+            try {
+              const savedRatings = JSON.parse(data.userRatings);
+              if (Array.isArray(savedRatings) && savedRatings.length > 0) {
+                setUserRatings(savedRatings);
+              }
+            } catch (e) {
+              // Ignore parse errors
+            }
+          }
+        }
+      } catch (error) {
+        console.log('Could not load saved comments, using initial data');
+        // If loading fails, keep using initialComments which is fine
+      }
+    };
+    
+    // Only load if we don't have initial comments
+    if ((!initialComments || initialComments.length === 0) && coffeeStoreId) {
+      loadSavedComments();
+    }
+  }, [coffeeStoreId, initialComments]);
 
   // Calculate average user rating
-  const allRatings = [...initialUserRatings, ...comments.map(c => c.rating)];
+  const allRatings = [...userRatings, ...comments.map(c => c.rating)];
   const averageUserRating = allRatings.length > 0 
     ? (allRatings.reduce((sum, rating) => sum + rating, 0) / allRatings.length).toFixed(1)
     : '0';
@@ -72,6 +121,7 @@ export default function CommentsSection({
 
       if (response.ok) {
         setComments(updatedComments);
+        setUserRatings(updatedRatings);
         setNewComment('');
         setUserName('');
         setNewRating(5);
