@@ -14,7 +14,7 @@ interface CoffeeStore {
   imgUrl: string;
 }
 
-// GET - Retrieve a coffee store
+// GET - Retrieve a coffee store (TypeScript fixed)
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
