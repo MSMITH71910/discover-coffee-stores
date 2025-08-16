@@ -57,6 +57,13 @@ export const createCoffeeStore = async (
               neighbourhood: address, // Use address as fallback for neighbourhood  
               votes: voting || 0,
               imgUrl,
+              description: description || '',
+              rating: rating || 0,
+              totalReviews: totalReviews || 0,
+              priceRange: priceRange || '',
+              offerings: typeof offerings === 'string' ? offerings : JSON.stringify(offerings || []),
+              comments: typeof comments === 'string' ? comments : JSON.stringify(comments || []),
+              userRatings: typeof userRatings === 'string' ? userRatings : JSON.stringify(userRatings || []),
             },
           },
         ]);
