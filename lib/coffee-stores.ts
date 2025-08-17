@@ -61,8 +61,32 @@ export const fetchCoffeeStores = async (longLat: string, limit: number) => {
     // Extract local results
     const localResults = data.local_results || [];
     
-    // Transform SERP API results to our format (keep all rich data)
-    const coffeeShops = localResults.slice(0, limit).map((result: any, idx: number) => ({
+    // Filter out results that are clearly too far away (different states/countries)
+    const filteredResults = localResults.filter((result: any) => {
+      const address = result.address || '';
+      // Keep results from Pennsylvania, Delaware (nearby states)
+      // Filter out international locations (Netherlands, UK, etc.)
+      const hasValidLocation = address.includes(', PA') || 
+                              address.includes(', DE') || 
+                              address.includes(', NJ') ||
+                              address.includes('Pennsylvania') ||
+                              address.includes('Delaware');
+      
+      // Also filter out clearly distant locations
+      const hasInvalidLocation = address.includes(', NY') ||
+                                 address.includes(', GA') ||
+                                 address.includes('Netherlands') ||
+                                 address.includes('United Kingdom') ||
+                                 address.includes('London') ||
+                                 address.includes('Amsterdam');
+      
+      return hasValidLocation && !hasInvalidLocation;
+    });
+    
+    console.log('🔍 Filtered results:', filteredResults.length, 'out of', localResults.length, 'total results');
+    
+    // Transform SERP API results to our format (keep all rich data) 
+    const coffeeShops = filteredResults.slice(0, limit).map((result: any, idx: number) => ({
       id: result.place_id || `coffee-shop-${idx}`,
       title: result.title || result.name || 'Coffee Shop',
       address: result.address || 'Address not available',
