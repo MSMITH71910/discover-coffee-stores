@@ -20,14 +20,20 @@ export default function NearbyCoffeeStores() {
     async function coffeeStoresByLocation() {
       if (longLat) {
         try {
+          console.log('🔍 Fetching coffee stores for coordinates:', longLat);
           const limit = 10;
-          const response = await fetch(
-            `/api/getCoffeeStoresByLocation?longLat=${longLat}&limit=${limit}`
-          );
+          const apiUrl = `/api/getCoffeeStoresByLocation?longLat=${longLat}&limit=${limit}`;
+          console.log('📡 API URL:', apiUrl);
+          
+          const response = await fetch(apiUrl);
           const coffeeStores = await response.json();
+          
+          console.log('☕ Found coffee stores:', coffeeStores.length, 'stores');
+          console.log('📍 First store location:', coffeeStores[0]?.address);
+          
           setCoffeeStores(coffeeStores);
         } catch (error) {
-          console.error(error);
+          console.error('❌ Error fetching coffee stores:', error);
         }
       }
     }
@@ -41,7 +47,18 @@ export default function NearbyCoffeeStores() {
         handleOnClick={handleOnClick}
         buttonText={isFindingLocation ? 'Locating...' : 'View stores nearby'}
       />
-      {locationErrorMsg && <p>Error: {locationErrorMsg}</p>}
+      {locationErrorMsg && <p className="text-red-400 mt-4">Location Error: {locationErrorMsg}</p>}
+      
+      {longLat && (
+        <div className="mt-4 p-4 bg-gray-800 rounded-lg">
+          <p className="text-green-400 text-sm">
+            📍 <strong>Your detected location:</strong> {longLat}
+          </p>
+          <p className="text-gray-300 text-xs mt-1">
+            (Coordinates: Longitude, Latitude format)
+          </p>
+        </div>
+      )}
 
       {coffeeStores.length > 0 && (
         <div className="mt-20">
