@@ -39,10 +39,10 @@ export const fetchCoffeeStores = async (longLat: string, limit: number) => {
     // Get photos from Unsplash
     const photos = await getListOfCoffeeStorePhotos();
     
-    // Parse coordinates
-    const [lat, lng] = longLat.split(',');
+    // Parse coordinates - longLat comes in as "longitude,latitude" format
+    const [lng, lat] = longLat.split(',');
     
-    // Use SERP API to find real coffee shops nearby
+    // Use SERP API to find real coffee shops nearby - SERP expects "latitude,longitude"
     const serpApiUrl = `https://serpapi.com/search.json?engine=google_maps&q=coffee+shop&ll=@${lat},${lng},15z&type=search&api_key=${process.env.SERP_API_KEY}`;
     
     const response = await fetch(serpApiUrl);
