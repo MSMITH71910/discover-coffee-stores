@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
         id: record.id,
         comments: record.comments || '[]',
         userRatings: record.userRatings || '[]',
-        votes: record.votes || 0,
+        votes: record.voting || 0,
         recordId: record.recordId,
         _debug: {
           hasComments: !!record.comments,

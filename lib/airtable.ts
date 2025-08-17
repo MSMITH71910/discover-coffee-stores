@@ -85,7 +85,7 @@ export const updateCoffeeStore = async (id: string) => {
       const records = await findRecordByFilter(id);
       if (records.length !== 0) {
         const record = records[0];
-        const updatedVotes = (record.votes || 0) + 1;
+        const updatedVotes = (record.voting || 0) + 1;
 
         const updatedRecords = await table.update([
           {

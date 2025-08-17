@@ -114,7 +114,7 @@ export async function POST(request: Request) {
         name: record.name,
         address: record.address,
         neighbourhood: (record as any).neighbourhood || record.address?.split(',').slice(-2).join(',').trim() || 'Delaware County, PA',
-        votes: record.votes || 0,
+        votes: record.voting || 0,
         imgUrl: record.imgUrl,
         // FORCE INCLUDE: Always include comments and userRatings, even if empty
         comments: record.comments || '[]',
