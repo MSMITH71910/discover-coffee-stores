@@ -39,7 +39,7 @@ export async function POST(request: Request) {
     }
 
     const record = findData.records[0];
-    const currentVotes = record.fields.votes || 0;
+    const currentVotes = record.fields.voting || 0;
     const newVotes = currentVotes + 1;
 
     // Update the record with new vote count
@@ -56,7 +56,7 @@ export async function POST(request: Request) {
           {
             id: record.id,
             fields: {
-              votes: newVotes
+              voting: newVotes
             }
           }
         ]
@@ -75,7 +75,7 @@ export async function POST(request: Request) {
       name: updatedRecord.fields.name,
       address: updatedRecord.fields.address,
       neighbourhood: updatedRecord.fields.neighbourhood,
-      votes: updatedRecord.fields.votes,
+      votes: updatedRecord.fields.voting,
       imgUrl: updatedRecord.fields.imgUrl,
       recordId: updatedRecord.id
     });
