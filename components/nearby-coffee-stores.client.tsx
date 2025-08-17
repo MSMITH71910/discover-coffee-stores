@@ -11,9 +11,27 @@ export default function NearbyCoffeeStores() {
     useTrackLocation();
 
   const [coffeeStores, setCoffeeStores] = useState<CoffeeStoreType[]>([]);
+  const [manualLocation, setManualLocation] = useState('');
 
   const handleOnClick = () => {
     handleTrackLocation();
+  };
+
+  const handleManualLocation = async () => {
+    if (manualLocation) {
+      try {
+        console.log('🔍 Fetching coffee stores for manual coordinates:', manualLocation);
+        const limit = 10;
+        const response = await fetch(
+          `/api/getCoffeeStoresByLocation?longLat=${manualLocation}&limit=${limit}`
+        );
+        const coffeeStores = await response.json();
+        console.log('☕ Found coffee stores:', coffeeStores.length, 'stores');
+        setCoffeeStores(coffeeStores);
+      } catch (error) {
+        console.error('❌ Error fetching coffee stores:', error);
+      }
+    }
   };
 
   useEffect(() => {
@@ -55,10 +73,38 @@ export default function NearbyCoffeeStores() {
             📍 <strong>Your detected location:</strong> {longLat}
           </p>
           <p className="text-gray-300 text-xs mt-1">
-            (Coordinates: Longitude, Latitude format)
+            (Coordinates: Longitude, Latitude format) - You're in Larchmont Square, PA area
           </p>
         </div>
       )}
+
+      <div className="mt-4 p-4 bg-blue-900 rounded-lg">
+        <p className="text-blue-300 text-sm mb-2">🧪 <strong>Test different location:</strong></p>
+        <div className="flex gap-2 flex-wrap">
+          <input
+            type="text"
+            placeholder="Enter coordinates (lon,lat)"
+            value={manualLocation}
+            onChange={(e) => setManualLocation(e.target.value)}
+            className="px-2 py-1 text-xs bg-gray-700 text-white rounded flex-1 min-w-[200px]"
+          />
+          <button
+            onClick={handleManualLocation}
+            className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-500"
+          >
+            Search Here
+          </button>
+        </div>
+        <div className="mt-2 text-xs text-gray-400">
+          <p>Try: <span 
+            className="cursor-pointer text-blue-400 hover:underline" 
+            onClick={() => setManualLocation('-74.0060,40.7128')}
+          >-74.0060,40.7128 (NYC)</span> or <span 
+            className="cursor-pointer text-blue-400 hover:underline"
+            onClick={() => setManualLocation('-122.4194,37.7749')}
+          >-122.4194,37.7749 (SF)</span></p>
+        </div>
+      </div>
 
       {coffeeStores.length > 0 && (
         <div className="mt-20">
