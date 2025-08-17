@@ -73,7 +73,7 @@ export default function NearbyCoffeeStores() {
             📍 <strong>Your detected location:</strong> {longLat}
           </p>
           <p className="text-gray-300 text-xs mt-1">
-            (Coordinates: Longitude, Latitude format) - You're in Larchmont Square, PA area
+            (Coordinates: Longitude, Latitude format) - GPS shows you ~15mi from your actual location
           </p>
         </div>
       )}
@@ -97,9 +97,13 @@ export default function NearbyCoffeeStores() {
         </div>
         <div className="mt-2 text-xs text-gray-400">
           <p>Try: <span 
+            className="cursor-pointer text-orange-400 hover:underline font-semibold" 
+            onClick={() => setManualLocation('-75.4037,39.9876')}
+          >-75.4037,39.9876 (Newtown Square, PA)</span></p>
+          <p className="mt-1">Or: <span 
             className="cursor-pointer text-blue-400 hover:underline" 
             onClick={() => setManualLocation('-74.0060,40.7128')}
-          >-74.0060,40.7128 (NYC)</span> or <span 
+          >-74.0060,40.7128 (NYC)</span> | <span 
             className="cursor-pointer text-blue-400 hover:underline"
             onClick={() => setManualLocation('-122.4194,37.7749')}
           >-122.4194,37.7749 (SF)</span></p>
