@@ -42,7 +42,7 @@ export async function GET(request: Request) {
       record: findData.records && findData.records.length > 0 ? {
         id: findData.records[0].fields.id,
         name: findData.records[0].fields.name,
-        votes: findData.records[0].fields.voting || 0,
+        votes: findData.records[0].fields.votes || 0,
         recordId: findData.records[0].id
       } : null,
       airtableResponse: findData

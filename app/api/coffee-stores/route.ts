@@ -61,7 +61,7 @@ export async function GET(request: Request) {
         name: record.fields.name,
         address: record.fields.address,
         neighbourhood: record.fields.neighbourhood || record.fields.address?.split(',').slice(-2).join(',').trim() || 'Delaware County, PA',
-        votes: record.fields.voting || 0,
+        votes: record.fields.votes || 0,
         imgUrl: record.fields.imgUrl,
         comments: record.fields.comments || '[]',
         userRatings: record.fields.userRatings || '[]',
@@ -114,7 +114,7 @@ export async function POST(request: Request) {
         name: record.name,
         address: record.address,
         neighbourhood: (record as any).neighbourhood || record.address?.split(',').slice(-2).join(',').trim() || 'Delaware County, PA',
-        votes: record.voting || 0,
+        votes: record.votes || 0,
         imgUrl: record.imgUrl,
         // FORCE INCLUDE: Always include comments and userRatings, even if empty
         comments: record.comments || '[]',
@@ -145,7 +145,7 @@ export async function POST(request: Request) {
               name,
               address: address || '',
               neighbourhood: neighbourhood || '',
-              voting: 0,
+              votes: 0,
               imgUrl: imgUrl || ''
             }
           }
@@ -165,7 +165,7 @@ export async function POST(request: Request) {
       name: newRecord.fields.name,
       address: newRecord.fields.address,
       neighbourhood: newRecord.fields.neighbourhood,
-      votes: newRecord.fields.voting || 0,
+      votes: newRecord.fields.votes || 0,
       imgUrl: newRecord.fields.imgUrl,
       recordId: newRecord.id
     });

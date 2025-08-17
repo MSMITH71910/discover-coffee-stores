@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
         id: record.id,
         comments: record.comments || '[]',
         userRatings: record.userRatings || '[]',
-        votes: record.voting || 0,
+        votes: record.votes || 0,
         recordId: record.recordId,
         _debug: {
           hasComments: !!record.comments,
@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
           name: `Coffee Store`,
           address: 'Address not available',
           neighbourhood: 'Delaware County, PA',
-          voting: 0,
+          votes: 0,
           imgUrl: 'https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMJA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80',
           description: 'A local coffee shop.',
           rating: 0,
