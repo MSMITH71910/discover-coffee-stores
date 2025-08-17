@@ -26,7 +26,7 @@ export async function GET() {
       }).firstPage();
       
       if (records.length > 0) {
-        fieldStructure = records.map((record, index) => ({
+        fieldStructure = records.map((record: any, index: number) => ({
           recordNum: index + 1,
           recordId: record.id,
           fields: Object.keys(record.fields || {}),
