@@ -2,6 +2,7 @@ import { fetchCoffeeStores } from '@/lib/coffee-stores';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
+export const revalidate = 0; // Disable all caching
 
 export async function GET(request: NextRequest) {
   try {
@@ -32,7 +33,9 @@ export async function GET(request: NextRequest) {
     }
 
     if (longLat) {
+      console.log('🚀 API: getCoffeeStoresByLocation called at', new Date().toISOString(), 'with coordinates:', longLat);
       const coffeeStores = await fetchCoffeeStores(longLat, limitNum);
+      console.log('✅ API: fetchCoffeeStores returned', coffeeStores?.length || 0, 'results');
       // Ensure we always return an array and never expose API keys
       return NextResponse.json(Array.isArray(coffeeStores) ? coffeeStores : []);
     }
