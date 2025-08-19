@@ -20,16 +20,14 @@ export default function NearbyCoffeeStores() {
   const handleManualLocation = async () => {
     if (manualLocation) {
       try {
-        console.log('🔍 Fetching coffee stores for manual coordinates:', manualLocation);
         const limit = 10;
         const response = await fetch(
           `/api/getCoffeeStoresByLocation?longLat=${manualLocation}&limit=${limit}`
         );
         const coffeeStores = await response.json();
-        console.log('☕ Found coffee stores:', coffeeStores.length, 'stores');
         setCoffeeStores(coffeeStores);
       } catch (error) {
-        console.error('❌ Error fetching coffee stores:', error);
+        console.error('Error fetching coffee stores:', error);
       }
     }
   };
@@ -38,20 +36,15 @@ export default function NearbyCoffeeStores() {
     async function coffeeStoresByLocation() {
       if (longLat) {
         try {
-          console.log('🔍 Fetching coffee stores for coordinates:', longLat);
           const limit = 10;
           const apiUrl = `/api/getCoffeeStoresByLocation?longLat=${longLat}&limit=${limit}`;
-          console.log('📡 API URL:', apiUrl);
           
           const response = await fetch(apiUrl);
           const coffeeStores = await response.json();
           
-          console.log('☕ Found coffee stores:', coffeeStores.length, 'stores');
-          console.log('📍 First store location:', coffeeStores[0]?.address);
-          
           setCoffeeStores(coffeeStores);
         } catch (error) {
-          console.error('❌ Error fetching coffee stores:', error);
+          console.error('Error fetching coffee stores:', error);
         }
       }
     }

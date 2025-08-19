@@ -1,7 +1,16 @@
 {
-  "name": "discover-coffee-stores",
-  "version": "0.1.0",
-  "private": true,
+  "name": "coffee-aficionado",
+  "version": "1.0.0",
+  "description": "A modern web application for discovering local coffee shops with GPS location detection",
+  "author": "Michael R Smith <smith.dev.labs@gmail.com>",
+  "homepage": "https://discover-coffee-stores-pied.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MSMITH71910/discover-coffee-stores.git"
+  },
+  "keywords": ["coffee", "location", "nextjs", "typescript", "maps", "gps"],
+  "license": "MIT",
+  "private": false,
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",

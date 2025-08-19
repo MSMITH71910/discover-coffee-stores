@@ -42,31 +42,14 @@ export const fetchCoffeeStores = async (longLat: string, limit: number) => {
     // Parse coordinates - longLat comes in as "longitude,latitude" format
     const [lng, lat] = longLat.split(',');
     
-    console.log('🔍 fetchCoffeeStores DEBUG:');
-    console.log('📍 Input longLat:', longLat);
-    console.log('📍 Parsed lng:', lng, 'lat:', lat);
-    
     // Use SERP API to find real coffee shops nearby - SERP expects "latitude,longitude"
     const serpApiUrl = `https://serpapi.com/search.json?engine=google_maps&q=coffee+shop&ll=@${lat},${lng},15z&type=search&api_key=${process.env.SERP_API_KEY}`;
-    console.log('📡 SERP API URL (without key):', serpApiUrl.replace(/api_key=.*/, 'api_key=[HIDDEN]'));
     
     const response = await fetch(serpApiUrl);
     const data = await response.json();
-    console.log('☕ SERP API response status:', response.status);
-    console.log('☕ Local results count:', data.local_results?.length || 0);
-    if (data.local_results && data.local_results.length > 0) {
-      console.log('📍 First result address:', data.local_results[0].address);
-    }
     
     // Extract local results - SERP API automatically returns location-appropriate results
     const localResults = data.local_results || [];
-    
-    console.log('🌍 GLOBAL LOCATION - Processing results for coordinates:', lat, lng);
-    console.log('☕ Total local results found:', localResults.length);
-    if (localResults.length > 0) {
-      console.log('📍 First result location:', localResults[0].address);
-      console.log('📍 Last result location:', localResults[localResults.length - 1]?.address);
-    }
     
     // No geographic filtering - trust SERP API to return location-appropriate results
     // This makes the app work globally like Google Maps
