@@ -96,17 +96,26 @@ export default function NearbyCoffeeStores() {
           </button>
         </div>
         <div className="mt-2 text-xs text-gray-400">
-          <p>Try: <span 
+          <p>🇺🇸 US: <span 
             className="cursor-pointer text-orange-400 hover:underline font-semibold" 
             onClick={() => setManualLocation('-75.4037,39.9876')}
-          >-75.4037,39.9876 (Newtown Square, PA)</span></p>
-          <p className="mt-1">Or: <span 
+          >-75.4037,39.9876 (Newtown Square, PA)</span> | <span 
             className="cursor-pointer text-blue-400 hover:underline" 
             onClick={() => setManualLocation('-74.0060,40.7128')}
           >-74.0060,40.7128 (NYC)</span> | <span 
             className="cursor-pointer text-blue-400 hover:underline"
             onClick={() => setManualLocation('-122.4194,37.7749')}
           >-122.4194,37.7749 (SF)</span></p>
+          <p className="mt-1">🌍 Global: <span 
+            className="cursor-pointer text-green-400 hover:underline" 
+            onClick={() => setManualLocation('-79.3832,43.6532')}
+          >-79.3832,43.6532 (Toronto, CA)</span> | <span 
+            className="cursor-pointer text-purple-400 hover:underline"
+            onClick={() => setManualLocation('-99.1332,19.4326')}
+          >-99.1332,19.4326 (Mexico City, MX)</span> | <span 
+            className="cursor-pointer text-yellow-400 hover:underline"
+            onClick={() => setManualLocation('2.3522,48.8566')}
+          >2.3522,48.8566 (Paris, FR)</span></p>
         </div>
       </div>
 

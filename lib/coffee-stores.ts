@@ -58,35 +58,21 @@ export const fetchCoffeeStores = async (longLat: string, limit: number) => {
       console.log('📍 First result address:', data.local_results[0].address);
     }
     
-    // Extract local results
+    // Extract local results - SERP API automatically returns location-appropriate results
     const localResults = data.local_results || [];
     
-    // Filter out results that are clearly too far away (different states/countries)
-    const filteredResults = localResults.filter((result: any) => {
-      const address = result.address || '';
-      // Keep results from Pennsylvania, Delaware (nearby states)
-      // Filter out international locations (Netherlands, UK, etc.)
-      const hasValidLocation = address.includes(', PA') || 
-                              address.includes(', DE') || 
-                              address.includes(', NJ') ||
-                              address.includes('Pennsylvania') ||
-                              address.includes('Delaware');
-      
-      // Also filter out clearly distant locations
-      const hasInvalidLocation = address.includes(', NY') ||
-                                 address.includes(', GA') ||
-                                 address.includes('Netherlands') ||
-                                 address.includes('United Kingdom') ||
-                                 address.includes('London') ||
-                                 address.includes('Amsterdam');
-      
-      return hasValidLocation && !hasInvalidLocation;
-    });
+    console.log('🌍 GLOBAL LOCATION - Processing results for coordinates:', lat, lng);
+    console.log('☕ Total local results found:', localResults.length);
+    if (localResults.length > 0) {
+      console.log('📍 First result location:', localResults[0].address);
+      console.log('📍 Last result location:', localResults[localResults.length - 1]?.address);
+    }
     
-    console.log('🔍 Filtered results:', filteredResults.length, 'out of', localResults.length, 'total results');
+    // No geographic filtering - trust SERP API to return location-appropriate results
+    // This makes the app work globally like Google Maps
     
     // Transform SERP API results to our format (keep all rich data) 
-    const coffeeShops = filteredResults.slice(0, limit).map((result: any, idx: number) => ({
+    const coffeeShops = localResults.slice(0, limit).map((result: any, idx: number) => ({
       id: result.place_id || `coffee-shop-${idx}`,
       title: result.title || result.name || 'Coffee Shop',
       address: result.address || 'Address not available',
